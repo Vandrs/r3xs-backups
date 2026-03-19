@@ -111,4 +111,58 @@ describe('Backup Command', () => {
     const content = await fs.readFile(path.join(destDir, 'file.txt'), 'utf8');
     expect(content).toBe('old content');
   });
+
+  // ===== New TDD Tests for Defensive Validation =====
+
+  test('deve lançar erro quando nenhum modo for especificado', async () => {
+    const options = {
+      source: sourceDir,
+      dest: destDir,
+      conflict: 'newer',
+    };
+
+    await expect(backupCommand(options)).rejects.toThrow('Modo de backup não especificado');
+  });
+
+  test('deve lançar erro quando ambos os modos forem especificados', async () => {
+    const options = {
+      source: sourceDir,
+      dest: destDir,
+      full: true,
+      savesOnly: true,
+      conflict: 'newer',
+    };
+
+    await expect(backupCommand(options)).rejects.toThrow('Modos conflitantes');
+  });
+
+  test('deve aceitar full=true com savesOnly=undefined', async () => {
+    await fs.writeFile(path.join(sourceDir, 'file.txt'), 'content');
+
+    const options = {
+      source: sourceDir,
+      dest: destDir,
+      full: true,
+      conflict: 'overwrite',
+    };
+
+    await backupCommand(options);
+
+    expect(await fs.pathExists(path.join(destDir, 'file.txt'))).toBe(true);
+  });
+
+  test('deve aceitar savesOnly=true com full=undefined', async () => {
+    await fs.writeFile(path.join(sourceDir, 'game.state'), 'save');
+
+    const options = {
+      source: sourceDir,
+      dest: destDir,
+      savesOnly: true,
+      conflict: 'newer',
+    };
+
+    await backupCommand(options);
+
+    expect(await fs.pathExists(path.join(destDir, 'game.state'))).toBe(true);
+  });
 });

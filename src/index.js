@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const { Command } = require('commander');
+const chalk = require('chalk');
 const backupCommand = require('./commands/backup');
 const packageJson = require('../package.json');
 
@@ -22,27 +23,22 @@ program
     'newer'
   )
   .action(async (options) => {
-    // Validar que apenas um modo foi escolhido
-    if (options.full && options.savesOnly) {
-      console.error('Erro: Escolha apenas --full OU --saves-only');
-      process.exit(1);
-    }
-
-    if (!options.full && !options.savesOnly) {
-      console.error('Erro: Você deve escolher --full OU --saves-only');
-      process.exit(1);
-    }
-
-    // Validar estratégia de conflito
+    // Validar estratégia de conflito (CLI-specific concern)
     const validStrategies = ['overwrite', 'skip', 'newer'];
     if (!validStrategies.includes(options.conflict)) {
       console.error(
-        `Erro: Estratégia inválida "${options.conflict}". Use: overwrite, skip ou newer`
+        chalk.red(`Erro: Estratégia inválida "${options.conflict}". Use: overwrite, skip ou newer`)
       );
       process.exit(1);
     }
 
-    await backupCommand(options);
+    // Delegate mode validation to backupCommand
+    try {
+      await backupCommand(options);
+    } catch (error) {
+      console.error(chalk.red(`Erro: ${error.message}`));
+      process.exit(1);
+    }
   });
 
 program.parse();

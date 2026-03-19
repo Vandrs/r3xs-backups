@@ -11,6 +11,15 @@ const { validatePaths } = require('../utils/validators');
 async function backupCommand(options) {
   const { source, dest, full, savesOnly, conflict } = options;
 
+  // Validate backup mode
+  if (!full && !savesOnly) {
+    throw new Error('Modo de backup não especificado. Use full=true ou savesOnly=true');
+  }
+  
+  if (full && savesOnly) {
+    throw new Error('Modos conflitantes. Escolha apenas full=true OU savesOnly=true');
+  }
+
   // Determinar modo de backup
   const mode = full ? 'full' : 'saves-only';
 
