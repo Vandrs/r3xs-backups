@@ -1,3 +1,0 @@
-# Placeholder for icon.png
-# TODO: Create a 512x512 PNG icon
-# For now, electron-builder will use default icon
