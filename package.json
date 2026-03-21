@@ -1,51 +1,32 @@
 {
-  "name": "r3xs-backup",
+  "name": "r3xs-backup-monorepo",
   "version": "1.0.0",
-  "description": "Ferramenta CLI para backup de ROMs e save states de handhelds R36S/R35S com ArkOS",
-  "main": "src/index.js",
-  "bin": {
-    "r3xs-backup": "./src/index.js"
-  },
+  "description": "Monorepo para ferramentas de backup R36S/R35S",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "lint": "eslint src tests",
-    "start": "node src/index.js"
+    "test": "npm test --workspaces --if-present",
+    "test:watch": "npm run test:watch --workspaces --if-present",
+    "test:coverage": "npm run test:coverage --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "start": "npm start --workspace=@r3xs-backup/cli"
   },
   "keywords": [
     "r36s",
     "r35s",
     "arkos",
     "backup",
-    "roms",
-    "save-states",
-    "retro-gaming"
+    "monorepo"
   ],
   "author": "",
   "license": "MIT",
-  "dependencies": {
-    "commander": "^11.1.0",
-    "fs-extra": "^11.2.0",
-    "chalk": "^4.1.2",
-    "ora": "^5.4.1"
-  },
-  "devDependencies": {
-    "jest": "^29.7.0",
-    "eslint": "^8.56.0"
-  },
   "engines": {
     "node": ">=16.0.0"
   },
-  "jest": {
-    "testEnvironment": "node",
-    "coverageDirectory": "coverage",
-    "collectCoverageFrom": [
-      "src/**/*.js",
-      "!src/index.js"
-    ],
-    "testMatch": [
-      "**/tests/**/*.test.js"
-    ]
+  "devDependencies": {
+    "jest": "29.7.0",
+    "eslint": "8.56.0"
   }
 }

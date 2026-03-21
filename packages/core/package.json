@@ -1,0 +1,47 @@
+{
+  "name": "@r3xs-backup/core",
+  "version": "1.0.0",
+  "description": "Lógica de negócio para backup de ROMs e save states",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src tests"
+  },
+  "keywords": [
+    "backup",
+    "file-operations",
+    "arkos"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "11.2.0"
+  },
+  "devDependencies": {
+    "jest": "29.7.0",
+    "eslint": "8.56.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageDirectory": "../../coverage/core",
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 90,
+        "lines": 90,
+        "statements": 90
+      }
+    }
+  }
+}

@@ -1,8 +1,7 @@
 const chalk = require('chalk');
 const ora = require('ora');
-const { scanFiles } = require('../services/fileScanner');
-const { copyFiles } = require('../services/fileCopier');
-const { validatePaths } = require('../utils/validators');
+
+const { scanFiles, copyFiles, validatePaths } = require('@r3xs-backup/core');
 
 /**
  * Executa o comando de backup

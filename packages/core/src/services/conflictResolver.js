@@ -19,18 +19,18 @@ async function resolveConflict(sourcePath, destPath, strategy = 'newer') {
 
     // Aplicar estratégia
     switch (strategy) {
-      case 'overwrite':
-        return true;
+    case 'overwrite':
+      return true;
 
-      case 'skip':
-        return false;
+    case 'skip':
+      return false;
 
-      case 'newer':
-        return await isSourceNewer(sourcePath, destPath);
+    case 'newer':
+      return await isSourceNewer(sourcePath, destPath);
 
-      default:
-        // Padrão: usar 'newer'
-        return await isSourceNewer(sourcePath, destPath);
+    default:
+      // Padrão: usar 'newer'
+      return await isSourceNewer(sourcePath, destPath);
     }
   } catch (error) {
     console.error(`Erro ao resolver conflito: ${error.message}`);

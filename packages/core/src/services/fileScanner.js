@@ -18,7 +18,7 @@ async function scanFiles(sourcePath, mode) {
     }
 
     // Função recursiva para buscar arquivos
-    async function scan(dirPath) {
+    const scan = async (dirPath) => {
       const entries = await fs.readdir(dirPath, { withFileTypes: true });
 
       for (const entry of entries) {
@@ -34,7 +34,7 @@ async function scanFiles(sourcePath, mode) {
           }
         }
       }
-    }
+    };
 
     await scan(sourcePath);
     return files;
