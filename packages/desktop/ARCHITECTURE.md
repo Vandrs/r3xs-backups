@@ -132,11 +132,13 @@ USER ACTION (Renderer)
        │    │   (1 file at a time)              │
        │    │                                   │
        │    ├─▶ Check cancel flag               │
+       │    │   (backupState.cancelled)         │
        │    │                                   │
        │    └─▶ Every 10 files OR 1s:           │
        │        event.sender.send(              │
        │          'backup-progress',            │
-       │          { current, total, stats }     │
+       │          { phase, current, total,      │
+       │            currentFile, stats }        │
        │        )                               │
        │                                        │
        │ 4. Complete                            │
@@ -170,56 +172,59 @@ USER ACTION (Renderer)
 
 ## File Responsibilities
 
-### `src/main/index.js` (29 lines)
+### `src/main/index.js`
 - **Single Responsibility:** Application lifecycle management
 - **Dependencies:** window.js, ipc-handlers.js
 - **Exports:** None (entry point)
-- **SOLID:** Single Responsibility — only handles app lifecycle events
-
-### `src/main/window.js` (50 lines)
-- **Single Responsibility:** BrowserWindow creation and configuration
-- **Dependencies:** Electron (BrowserWindow)
+### `src/main/window.js`
+- **Single Responsibility:** BrowserWindow creation and configuration (1000×700, min 800×600)
 - **Exports:** `createWindow()`
-- **SOLID:** 
-  - Single Responsibility — only creates windows
-  - Open/Closed — can extend with new window types without modifying
-
-### `src/main/ipc-handlers.js` (213 lines)
+- **SOLID:** SRP — only creates windows; OCP — extend with new window types without modifying
+### `src/main/ipc-handlers.js`
 - **Single Responsibility:** IPC communication orchestration
 - **Dependencies:** Electron (ipcMain, dialog), @r3xs-backup/core
 - **Exports:** `registerIpcHandlers()`
-- **SOLID:**
-  - Single Responsibility — only registers and handles IPC
-  - Dependency Inversion — depends on core abstractions, not implementations
+- **SOLID:** SRP — only registers/handles IPC; DIP — depends on core abstractions
 
-### `src/preload/index.js` (68 lines)
+**IPC Handlers:**
+
+| Handler             | Description                                        |
+|---------------------|----------------------------------------------------|
+| `select-source-dir` | Opens a directory dialog; returns selected path    |
+| `select-dest-dir`   | Opens a directory dialog; returns selected path    |
+| `start-backup`      | Validates paths, scans files, copies with progress |
+| `cancel-backup`     | Sets `backupState.cancelled` flag; stops loop      |
+### `src/preload/index.js`
 - **Single Responsibility:** Secure API bridge
 - **Dependencies:** Electron (contextBridge, ipcRenderer)
 - **Exports:** None (side-effect: exposes `window.electronAPI`)
-- **SOLID:**
-  - Interface Segregation — minimal API surface
-  - Open/Closed — new APIs added without changing existing
+- **SOLID:** ISP — minimal API surface; OCP — new APIs added without changing existing
+
+**Exposed API surface:**
+
+```javascript
+window.electronAPI = {
+  selectSourceDir()    // Promise<string|null>
+  selectDestDir()      // Promise<string|null>
+  startBackup(options) // Promise<{success, stats, error?}>
+  cancelBackup()       // Promise<{success, message}>
+  onBackupProgress(cb) // Returns cleanup function
+  onBackupComplete(cb) // Returns cleanup function
+  onBackupError(cb)    // Returns cleanup function
+}
+```
+
+All event listener methods return a cleanup function to prevent memory leaks; no Node.js APIs are accessible in the renderer.
 
 ---
 
 ## Testing Strategy
 
-### Unit Tests
-- ✅ `ipc-handlers.test.js` — Mock Electron APIs, verify handler logic
-- 🔲 `window.test.js` — (Future) Test window configuration
+**Unit:** `ipc-handlers.test.js` (mock Electron APIs); `window.test.js` (future).
+**Integration:** E2E via Spectron; IPC flow tests for end-to-end backup execution.
+**Manual:** `npm run dev` → UI loads; DevTools console → `window.electronAPI` defined; renderer → `require` throws.
 
-### Integration Tests
-- 🔲 E2E with Spectron — Launch full app, test UI interactions
-- 🔲 IPC flow tests — Verify end-to-end backup execution
-
-### Manual Tests
-- ✅ `npm run dev` → Verify UI loads
-- ✅ DevTools console → Verify `window.electronAPI` exists
-- ✅ Security test → Verify `require` is blocked in renderer
-
----
-
-## Security Checklist ✅
+## Security Checklist
 
 | Protection                          | Status | Implementation               |
 |-------------------------------------|--------|------------------------------|
@@ -238,12 +243,22 @@ USER ACTION (Renderer)
 
 ## Performance Considerations
 
-- **Progress Throttling:** Updates sent max every 1s to avoid flooding IPC
+- **Progress Throttling:** Updates sent every 10 files OR every 1s to avoid flooding IPC
+- **Progress Payload:** `{ phase, current, total, currentFile, stats }` emitted on `backup-progress`
 - **Async Operations:** All file operations use async/await (non-blocking)
-- **Cancellation:** Checks flag between files (< 1s response time)
+- **Cancellation:** Checks `backupState.cancelled` flag between files (< 1s response time)
 - **Memory:** No file buffering (core handles streaming)
 
 ---
+
+## Risks & Mitigations
+
+| Risk                                     | Mitigation                                        |
+|------------------------------------------|---------------------------------------------------|
+| Memory leak in event listeners           | All listener methods return a cleanup function    |
+| Long backup blocks UI responsiveness     | Async IPC events decouple copy loop from renderer |
+| Invalid paths cause runtime crash        | Explicit `validatePaths()` call before execution  |
+| Cancellation leaves partial file copies  | Cancel flag checked between each individual file  |
 
 ## Known Limitations
 
