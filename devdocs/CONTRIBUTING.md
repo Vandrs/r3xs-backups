@@ -1,15 +1,19 @@
 # Guia de Contribuição
 
-Obrigado por considerar contribuir com o R3XS Backups! 🎮
+Obrigado por considerar contribuir com o R3XS Backup!
 
-## Como Contribuir
+> **Docs relacionados:** [Guia do Desenvolvedor](./DEVELOPERS_GUIDE.md) | [Testes](./TESTING.md) | [Estrutura do Projeto](./PROJECT_STRUCTURE.md)
+
+---
+
+## Fluxo de Contribuição
 
 ### 1. Fork e Clone
 
 ```bash
 git clone https://github.com/seu-usuario/r3xs-backup.git
 cd r3xs-backup
-npm install
+npm install   # instala dependências de todos os workspaces (npm workspaces)
 ```
 
 ### 2. Crie uma Branch
@@ -22,44 +26,36 @@ git checkout -b fix/meu-bugfix
 
 ### 3. Desenvolvimento com TDD
 
-Sempre siga Test-Driven Development:
+Sempre escreva o teste antes da implementação. Identifique o pacote correto:
 
 ```bash
-# 1. Escrever teste primeiro
-vim tests/unit/minhaFeature.test.js
+# Feature no pacote core (lógica de negócio)
+packages/core/tests/unit/myFeature.test.js   # 1. Escrever teste
+packages/core/src/services/myFeature.js      # 2. Implementar
 
-# 2. Rodar teste (deve falhar)
-npm test
+# Feature no pacote cli (comandos)
+packages/cli/tests/unit/myFeature.test.js    # 1. Escrever teste
+packages/cli/src/commands/myFeature.js       # 2. Implementar
+```
 
-# 3. Implementar código mínimo
-vim src/services/minhaFeature.js
+Ciclo TDD:
 
-# 4. Rodar teste (deve passar)
-npm test
-
-# 5. Refatorar
-npm run test:watch
+```bash
+npm test                  # Rode o teste (deve falhar)
+# ... implemente o código mínimo ...
+npm test                  # Rode novamente (deve passar)
+npm run test:watch        # Use watch durante o desenvolvimento
 ```
 
 ### 4. Commit
 
-Use commits semânticos:
+Use [Conventional Commits](https://www.conventionalcommits.org/):
+`feat` · `fix` · `docs` · `test` · `refactor` · `style` · `chore`
 
 ```bash
 git commit -m "feat: adiciona backup incremental"
 git commit -m "fix: corrige filtro de extensões case-sensitive"
-git commit -m "docs: atualiza README com exemplos"
-git commit -m "test: adiciona testes para modo compress"
 ```
-
-Tipos de commit:
-- `feat`: Nova feature
-- `fix`: Bug fix
-- `docs`: Documentação
-- `test`: Testes
-- `refactor`: Refatoração
-- `style`: Formatação
-- `chore`: Tarefas de manutenção
 
 ### 5. Push e Pull Request
 
@@ -67,156 +63,115 @@ Tipos de commit:
 git push origin feature/minha-feature
 ```
 
-Abra um PR no GitHub com:
-- Descrição clara do que foi feito
-- Screenshots (se aplicável)
-- Checklist de testes rodados
+Abra um PR no GitHub com descrição clara, screenshots (se aplicável) e o checklist abaixo preenchido.
+
+---
 
 ## Checklist do PR
 
+- [ ] Node.js >= 16.0.0 (`node --version`)
 - [ ] Código segue o style guide
+- [ ] Lint sem erros (`npm run lint`)
 - [ ] Todos os testes passam (`npm test`)
-- [ ] Cobertura de testes adequada (`npm run test:coverage`)
-- [ ] Documentação atualizada
+- [ ] Cobertura adequada por workspace (`npm run test:coverage`): services ≥ 90%, commands ≥ 80%, utils ≥ 95%
+- [ ] Smoke test: `--help` e `--version` funcionam corretamente
+- [ ] Sem `console.log` ou `debugger` esquecidos
+- [ ] JSDoc presente em todas as funções exportadas
+- [ ] `node_modules` ausente do repositório (`.gitignore` correto)
+- [ ] `devdocs/` atualizado se comportamento ou estrutura mudou
 - [ ] Commits seguem padrão semântico
-- [ ] Nenhum console.log/debugger esquecido
-- [ ] README atualizado (se necessário)
+
+---
 
 ## Style Guide
 
 ### JavaScript
 
-- **ES6+**: Usar const/let, arrow functions, async/await
-- **Naming**: camelCase para variáveis/funções, PascalCase para classes
-- **Indentação**: 2 espaços
-- **Strings**: Single quotes (`'`) exceto JSX
-- **Semicolons**: Sim
+- **ES6+**: `const`/`let`, arrow functions, `async/await` — sem callbacks ou `.then()`
+- **Naming**: `camelCase` para variáveis/funções, `PascalCase` para classes
+- **Indentação**: 2 espaços; **Strings**: single quotes; **Semicolons**: obrigatório
 
-Exemplo:
 ```javascript
-// ✅ Bom
+// ✅ Correto
 async function copyFile(source, dest) {
   const content = await fs.readFile(source, 'utf8');
   await fs.writeFile(dest, content);
 }
 
-// ❌ Ruim
+// ❌ Incorreto — callback style
 function copyFile(source, dest, callback) {
   fs.readFile(source, function(err, content) {
-    if (err) throw err;
     fs.writeFile(dest, content, callback);
   });
 }
 ```
 
-### Estrutura de Arquivos
+### Estrutura de Módulos
 
-- Um módulo por arquivo
-- Exports no final do arquivo
-- Imports no topo, agrupados (externos → internos)
+- Um módulo por arquivo; exports nomeados no final; imports agrupados (builtins → externos → internos)
 
 ```javascript
-// Externos
-const fs = require('fs-extra');
+// 1. Builtins
 const path = require('path');
 
-// Internos
-const { scanFiles } = require('./fileScanner');
+// 2. Externos
+const fs = require('fs-extra');
+
+// 3. Internos (referência ao pacote ou caminho relativo)
+const { scanFiles } = require('../services/fileScanner');
 const { validatePaths } = require('../utils/validators');
 
 // ... código ...
 
-module.exports = {
-  backupCommand,
-};
+module.exports = { backupCommand };
 ```
-
-### Testes
-
-- Um arquivo de teste por módulo
-- Describe para agrupamento lógico
-- Test names descritivos
-
-```javascript
-describe('FileScanner', () => {
-  describe('scanFiles - modo full', () => {
-    test('deve encontrar todos os arquivos recursivamente', async () => {
-      // ...
-    });
-  });
-});
-```
-
-## Reportando Bugs
-
-Use o template de issue no GitHub:
-
-- **Título claro**: "Erro ao copiar arquivos com acentos"
-- **Passos para reproduzir**:
-  1. Executar `r3xs-backup --source /path --dest /dest --full`
-  2. Ver erro X
-- **Comportamento esperado**: Deveria copiar
-- **Comportamento atual**: Lança erro
-- **Sistema**: Linux Ubuntu 22.04, Node 18.0.0
-- **Logs**: (anexar se possível)
-
-## Sugerindo Features
-
-Abra uma issue de feature request com:
-
-- **Problema**: Descrever o problema atual
-- **Solução proposta**: Sua ideia de solução
-- **Alternativas**: Outras abordagens consideradas
-- **Contexto adicional**: Screenshots, exemplos
-
-## Prioridades
-
-### Alta Prioridade
-- Bugs críticos (perda de dados, crashes)
-- Problemas de segurança
-- Testes falhando
-
-### Média Prioridade
-- Novas features importantes
-- Melhorias de performance
-- Refatorações
-
-### Baixa Prioridade
-- Melhorias de documentação
-- Features "nice-to-have"
-- Otimizações menores
-
-## 📦 Publicação NPM (Maintainers)
-
-### Preparação
-```bash
-# 1. Garantir qualidade
-npm test
-npm run test:coverage  # Mínimo 80%
-
-# 2. Atualizar versão (semver)
-npm version patch  # 1.0.0 -> 1.0.1
-npm version minor  # 1.0.1 -> 1.1.0
-npm version major  # 1.1.0 -> 2.0.0
-
-# 3. Validar pacote
-npm publish --dry-run
-```
-
-### Publicar
-```bash
-npm login
-npm publish
-git push --tags
-```
-
-Veja [ROADMAP.md](./ROADMAP.md) para planos futuros.
 
 ---
 
-## Perguntas?
+## Reportando Bugs
 
-- Abra uma issue com label "question"
-- Entre em contato com os maintainers
+Abra uma issue com:
 
-Obrigado por contribuir! 🚀
+- **Título claro**: ex. "Erro ao copiar arquivos com acentos"
+- **Passos para reproduzir**: comandos executados e output
+- **Comportamento esperado vs. atual**
+- **Ambiente**: OS, versão do Node.js (`node --version`)
+
+## Sugerindo Features
+
+Abra uma issue de feature request com: problema atual, solução proposta, alternativas consideradas.
+
+## Prioridades
+
+- **Alta**: bugs críticos (perda de dados), falhas de segurança, testes quebrando
+- **Média**: novas features relevantes, melhorias de performance, refatorações
+- **Baixa**: documentação, features "nice-to-have", otimizações menores
+
+---
+
+## Publicação NPM (Maintainers)
+
+O root do monorepo é privado. Publique individualmente por pacote:
+
+```bash
+# Garantir qualidade antes de publicar
+npm test
+npm run test:coverage
+npm run lint
+
+# Atualizar versão (semver) no pacote alvo
+npm version patch --workspace=@r3xs-backup/core
+
+# Publicar pacotes públicos
+npm publish --workspace=@r3xs-backup/core
+npm publish --workspace=@r3xs-backup/cli
+
+# Desktop é privado — distribuído via electron-builder
+npm run build --workspace=@r3xs-backup/desktop
+
+git push --tags
+```
+
+---
+
+Dúvidas? Abra uma issue com a label `question`.

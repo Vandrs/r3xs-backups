@@ -1,27 +1,107 @@
 # R3XS Backups
 
-🎮 Ferramenta CLI para backup de ROMs e save states de handhelds R36S/R35S com ArkOS.
+🎮 Ferramentas de backup de ROMs e save states para handhelds R36S/R35S com ArkOS.
+
+Escolha entre:
+- **CLI** - Interface de linha de comando para scripts e automação
+- **Desktop App** - Interface gráfica para usuários que preferem GUIs
 
 ## 📋 Descrição
 
-O **R3XS Backups** facilita o backup dos seus jogos e saves do handheld R36S/R35S. Simplesmente conecte o cartão SD no PC e execute o comando para fazer backup completo ou apenas dos save states.
+O **R3XS Backups** facilita o backup dos seus jogos e saves do handheld R36S/R35S. Simplesmente conecte o cartão SD no PC e escolha a ferramenta que preferir para fazer backup completo ou apenas dos save states.
+
+## 📦 Estrutura do Monorepo
+
+Este projeto é um monorepo npm com três pacotes:
+
+```
+r3xs-backup/
+├── packages/
+│   ├── core/       (@r3xs-backup/core)      # Lógica compartilhada de backup
+│   ├── cli/        (@r3xs-backup/cli)       # Interface de linha de comando
+│   └── desktop/    (@r3xs-backup/desktop)   # Interface gráfica Electron
+```
+
+Cada pacote pode ser usado independentemente, mas todos compartilham a mesma lógica de backup através do `@r3xs-backup/core`.
 
 ## 🚀 Instalação
+
+### Para Usuários Finais
+
+#### Opção 1: CLI (Linha de Comando)
 
 ```bash
 npm install -g r3xs-backup
 ```
 
-Ou clone o repositório e instale localmente:
+#### Opção 2: Desktop App (Interface Gráfica)
+
+Baixe o instalador para sua plataforma na seção [Releases](../../releases):
+
+- **Windows**: `R3XS-Backup-Setup-X.X.X.exe`
+- **Linux**: `R3XS-Backup-X.X.X.AppImage` ou `.deb`
+
+### Para Desenvolvedores
+
+Clone o repositório e instale as dependências de todos os workspaces:
 
 ```bash
 git clone https://github.com/seu-usuario/r3xs-backup.git
 cd r3xs-backup
 npm install
-npm link
 ```
 
 ## 💻 Uso
+
+### 🖥️ Desktop App (Interface Gráfica)
+
+A aplicação desktop oferece uma interface visual intuitiva para gerenciar seus backups.
+
+#### Executar em Modo Desenvolvimento
+
+```bash
+# Da raiz do monorepo
+npm run dev --workspace=@r3xs-backup/desktop
+
+# Ou diretamente no package
+cd packages/desktop
+npm run dev
+```
+
+#### Construir Distribuível
+
+```bash
+# Da raiz do monorepo
+cd packages/desktop
+
+# Build para todas as plataformas
+npm run build:all
+
+# Build apenas para Windows
+npm run build:win
+
+# Build apenas para Linux
+npm run build:linux
+```
+
+Os instaladores serão gerados em `packages/desktop/dist/`.
+
+#### Funcionalidades da Interface
+
+- ✅ Seleção visual de diretórios (origem e destino)
+- ✅ Escolha entre backup completo ou apenas saves
+- ✅ Estratégias de conflito configuráveis (overwrite, skip, newer)
+- ✅ Barra de progresso em tempo real
+- ✅ Log detalhado de cada etapa do backup
+- ✅ Estatísticas finais (arquivos copiados, pulados, falhas)
+
+**Plataformas Suportadas:** Windows, Linux (AppImage, .deb)
+
+📖 **Documentação completa:** [packages/desktop/QUICKSTART.md](./packages/desktop/QUICKSTART.md)
+
+---
+
+### ⌨️ CLI (Linha de Comando)
 
 ### Backup Completo (ROMs + Saves)
 
@@ -104,13 +184,15 @@ r3xs-backup --source /media/username/R36S/easyroms --dest ~/Documents/R36S-Backu
 
 ## 🧪 Desenvolvimento
 
-Para contribuir ou executar em modo de desenvolvimento:
+Este é um **monorepo npm** com três workspaces independentes. Cada pacote tem seus próprios testes e linting.
+
+### Comandos Globais (executam em todos os workspaces)
 
 ```bash
-# Instalar dependências
+# Instalar dependências de todos os workspaces
 npm install
 
-# Executar testes
+# Executar testes de todos os pacotes
 npm test
 
 # Executar testes em modo watch
@@ -119,15 +201,51 @@ npm run test:watch
 # Verificar cobertura de testes
 npm run test:coverage
 
-# Executar em modo dev
-npm start -- --source ./test-source --dest ./test-dest --full
+# Lint de todos os pacotes
+npm run lint
+```
+
+### Executar Pacote Específico
+
+```bash
+# CLI
+npm start --workspace=@r3xs-backup/cli -- --source ./test --dest ./backup --full
+
+# Desktop
+npm run dev --workspace=@r3xs-backup/desktop
+
+# Core (rodar testes)
+npm test --workspace=@r3xs-backup/core
+```
+
+### Estrutura de Desenvolvimento
+
+```
+packages/
+├── core/              # Lógica de backup compartilhada
+│   ├── src/           # Serviços (fileScanner, fileCopier, etc)
+│   └── tests/         # Testes unitários e integração
+├── cli/               # Interface CLI (Commander.js)
+│   ├── src/           # Commands e entry point
+│   └── tests/         # Testes CLI
+└── desktop/           # Interface Electron
+    ├── src/
+    │   ├── main/      # Main process
+    │   ├── preload/   # Preload script (security bridge)
+    │   └── renderer/  # UI (HTML/CSS/JS)
+    └── tests/         # Testes Electron
 ```
 
 ## 📚 Documentação
 
 ### Para Usuários
+
+#### CLI
 - **README.md** (este arquivo) - Como usar o CLI
-- **[devdocs/USER_GUIDE.md](./devdocs/USER_GUIDE.md)** - Guia completo de uso e desenvolvimento
+
+#### Desktop App
+- **[packages/desktop/QUICKSTART.md](./packages/desktop/QUICKSTART.md)** - Início rápido e guia de uso
+- **[packages/desktop/IMPLEMENTATION.md](./packages/desktop/IMPLEMENTATION.md)** - Detalhes de implementação
 
 ### Para Desenvolvedores
 - **[devdocs/INDEX.md](./devdocs/INDEX.md)** - Índice completo da documentação
@@ -135,6 +253,7 @@ npm start -- --source ./test-source --dest ./test-dest --full
 - **[devdocs/CONTRIBUTING.md](./devdocs/CONTRIBUTING.md)** - Como contribuir
 - **[devdocs/TESTING.md](./devdocs/TESTING.md)** - Guia de testes
 - **[devdocs/ROADMAP.md](./devdocs/ROADMAP.md)** - Plano de evolução
+- **[AGENTS.md](./AGENTS.md)** - Guia para agentes de IA
 
 📖 **[Ver índice completo da documentação](./devdocs/INDEX.md)**
 

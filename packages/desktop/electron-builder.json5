@@ -1,0 +1,39 @@
+{
+  appId: "com.r3xs.backup.desktop",
+  productName: "R3XS Backup",
+  copyright: "Copyright © 2026",
+  
+  directories: {
+    output: "dist",
+    buildResources: "assets"
+  },
+  
+  files: [
+    "src/**/*",
+    "!src/**/*.test.js",
+    "!src/**/*.spec.js",
+    "!**/*.md",
+    "assets/**/*",
+    "package.json"
+  ],
+  
+  win: {
+    target: ["nsis"],
+    icon: "assets/icon.png"
+  },
+  
+  nsis: {
+    oneClick: false,
+    allowToChangeInstallationDirectory: true,
+    createDesktopShortcut: true,
+    createStartMenuShortcut: true,
+    shortcutName: "R3XS Backup"
+  },
+  
+  linux: {
+    target: ["AppImage", "deb"],
+    icon: "assets/icon.png",
+    category: "Utility",
+    synopsis: "Backup tool for R36S/R35S handhelds"
+  }
+}

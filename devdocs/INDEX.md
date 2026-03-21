@@ -9,8 +9,7 @@ Guia de navegação da documentação do R3XS Backups.
 
 ### Começar
 - **[DEVELOPERS_GUIDE.md](./DEVELOPERS_GUIDE.md)** - Setup inicial e comandos essenciais
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Como contribuir com código
-- **[VERIFICATION_CHECKLIST.md](./VERIFICATION_CHECKLIST.md)** - Checklist de verificação
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Como contribuir com código (inclui checklist do PR)
 
 ### Arquitetura e Testes
 - **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)** - Visão geral da arquitetura e métricas
@@ -20,6 +19,7 @@ Guia de navegação da documentação do R3XS Backups.
 - **[ADR-001](./adrs/ADR-001-tech-stack.md)** - Escolha de tech stack
 - **[ADR-002](./adrs/ADR-002-file-filtering-strategy.md)** - Estratégia de filtros
 - **[ADR-003](./adrs/ADR-003-monorepo-structure.md)** - Estrutura monorepo com npm workspaces
+- **[ADR-004](./adrs/ADR-004-electron-desktop-architecture.md)** - Arquitetura da aplicação desktop
 
 ### Roadmap
 - **[ROADMAP.md](./ROADMAP.md)** - Plano de evolução do projeto

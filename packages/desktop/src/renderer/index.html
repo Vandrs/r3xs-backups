@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R3XS Backup</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+  <header>
+    <h1>🎮 R3XS Backup</h1>
+    <p>Backup de ROMs e Saves de R36S/R35S</p>
+  </header>
+
+  <main>
+    <!-- Seção de seleção de pastas -->
+    <section class="path-selection">
+      <div class="input-group">
+        <label for="source-path">Origem (easyroms):</label>
+        <div class="input-with-button">
+          <input type="text" id="source-path" readonly placeholder="Selecione a pasta de origem..." aria-label="Caminho da pasta de origem">
+          <button id="select-source-btn" type="button" aria-label="Selecionar pasta de origem">Selecionar</button>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <label for="dest-path">Destino (backup):</label>
+        <div class="input-with-button">
+          <input type="text" id="dest-path" readonly placeholder="Selecione a pasta de destino..." aria-label="Caminho da pasta de destino">
+          <button id="select-dest-btn" type="button" aria-label="Selecionar pasta de destino">Selecionar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Opções de backup -->
+    <section class="options">
+      <div class="option-group">
+        <h3>Modo de Backup</h3>
+        <label>
+          <input type="radio" name="mode" value="full" checked aria-label="Backup completo">
+          <span>Completo (ROMs + Saves)</span>
+        </label>
+        <label>
+          <input type="radio" name="mode" value="savesOnly" aria-label="Apenas saves">
+          <span>Apenas Saves</span>
+        </label>
+      </div>
+
+      <div class="option-group">
+        <h3>Conflitos</h3>
+        <label>
+          <input type="radio" name="conflict" value="newer" checked aria-label="Sobrescrever se mais recente">
+          <span>Sobrescrever se mais recente</span>
+        </label>
+        <label>
+          <input type="radio" name="conflict" value="overwrite" aria-label="Sobrescrever tudo">
+          <span>Sobrescrever tudo</span>
+        </label>
+        <label>
+          <input type="radio" name="conflict" value="skip" aria-label="Ignorar duplicados">
+          <span>Ignorar duplicados</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Botões de ação -->
+    <section class="actions">
+      <button id="start-backup-btn" class="primary" type="button" disabled aria-label="Iniciar backup">
+        Iniciar Backup
+      </button>
+      <button id="cancel-backup-btn" class="secondary" type="button" disabled aria-label="Cancelar backup">
+        Cancelar
+      </button>
+    </section>
+
+    <!-- Progresso -->
+    <section class="progress" style="display: none;" aria-live="polite">
+      <div class="progress-bar-container" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+      <p id="progress-text" class="progress-text">0 / 0 arquivos (0%)</p>
+      <p id="current-file" class="current-file"></p>
+    </section>
+
+    <!-- Logs -->
+    <section class="logs">
+      <h3>Log de Operações</h3>
+      <div id="log-container" class="log-container" role="log" aria-live="polite" aria-atomic="false"></div>
+    </section>
+  </main>
+
+  <script src="scripts/ui.js"></script>
+  <script src="scripts/app.js"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Guia do Desenvolvedor
 
-Guia prático para desenvolvimento diário do R3XS Backups.
+Guia prático para desenvolvimento diário do R3XS Backup (monorepo npm workspaces).
 
 > **📚 Docs Especializados:** [Workflow TDD completo →TESTING.md](./TESTING.md) | [Estrutura e Métricas →PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) | [Guia de Contribuição →CONTRIBUTING.md](./CONTRIBUTING.md)
 
@@ -8,39 +8,18 @@ Guia prático para desenvolvimento diário do R3XS Backups.
 
 ## 🚀 Quick Start
 
-### Instalação e Primeiro Uso
-
 ```bash
-# 1. Instalar dependências
+# 1. Instalar todas as dependências (todos os pacotes)
 npm install
 
-# 2. Testar instalação
+# 2. Verificar instalação
 npm test
 
-# 3. Instalar globalmente
-npm link
+# 3. Executar o CLI
+npm start -- --source ./test-easyroms --dest ./backup --full
 
-# 4. Usar o comando
-r3xs-backup --help
-```
-
-### Primeiro Backup
-
-```bash
-# Criar dados de teste
-mkdir -p test-easyroms/nes test-easyroms/snes
-echo "mario rom" > test-easyroms/nes/mario.nes
-echo "mario save" > test-easyroms/nes/mario.nes.state
-echo "zelda rom" > test-easyroms/snes/zelda.smc
-
-# Backup completo
-r3xs-backup --source ./test-easyroms --dest ./backup-full --full
-
-# Backup apenas saves
-r3xs-backup --source ./test-easyroms --dest ./backup-saves --saves-only
-
-# Com estratégia de conflito
-r3xs-backup --source ./test-easyroms --dest ./backup --full --conflict skip
+# 4. Executar a interface desktop
+npm run dev
 ```
 
 ---
@@ -49,17 +28,21 @@ r3xs-backup --source ./test-easyroms --dest ./backup --full --conflict skip
 
 | Categoria | Comando | Descrição |
 |-----------|---------|-----------|
-| **Testes** | `npm test` | Todos os testes |
+| **Testes** | `npm test` | Todos os pacotes |
 | | `npm run test:watch` | Modo watch (recomendado!) |
-| | `npm test -- fileScanner.test.js` | Teste específico |
+| | `npm run test:coverage` | Relatório de cobertura |
+| | `npm test --workspace=@r3xs-backup/core` | Apenas o pacote core |
+| | `npm test --workspace=@r3xs-backup/cli` | Apenas o pacote cli |
+| | `npm test --workspace=@r3xs-backup/desktop` | Apenas o pacote desktop |
+| | `npm test --workspace=@r3xs-backup/core -- fileScanner.test.js` | Arquivo de teste específico |
 | | `npm test -- -t "nome do teste"` | Teste por nome |
-| | `npm run test:coverage` | Cobertura de testes |
-| **CLI Local** | `node src/index.js --help` | Ver ajuda |
-| | `node src/index.js --version` | Ver versão |
-| | `npm start -- --source ./test --dest ./backup --full` | Executar com npm start |
-| **Global** | `npm link` | Instalar globalmente |
-| | `r3xs-backup --source /media/sdcard --dest ~/backup --full` | Usar como comando global |
-| | `npm unlink` | Remover link global |
+| **CLI** | `npm start` | Executa `@r3xs-backup/cli` |
+| | `npm start -- --source /src --dest /dest --full` | Backup completo |
+| | `npm start -- --source /src --dest /dest --saves-only` | Apenas saves |
+| | `npm start -- --source /src --dest /dest --full --conflict skip` | Com estratégia de conflito |
+| **Desktop** | `npm run dev` | Inicia app Electron |
+| **Lint** | `npm run lint` | Lint em todos os pacotes |
+| | `npm run lint --workspace=@r3xs-backup/core` | Lint em pacote específico |
 | **Limpeza** | `rm -rf node_modules package-lock.json && npm install` | Reinstalar dependências |
 | | `npm test -- --clearCache` | Limpar cache do Jest |
 | | `rm -rf coverage` | Limpar relatórios |
@@ -70,7 +53,7 @@ r3xs-backup --source ./test-easyroms --dest ./backup --full --conflict skip
 
 ### Tipos de Commit (Conventional Commits)
 
-```bash
+```
 feat:     nova funcionalidade
 fix:      correção de bug
 docs:     documentação
@@ -85,7 +68,7 @@ chore:    tarefas de manutenção
 # 1. Criar branch
 git checkout -b feature/minha-feature
 
-# 2. Desenvolver com TDD (ver TESTING.md)
+# 2. Desenvolver com TDD
 npm run test:watch  # Manter rodando
 
 # 3. Commits frequentes
@@ -94,7 +77,6 @@ git commit -m "feat: implementa minha feature"
 
 # 4. Push e PR
 git push origin feature/minha-feature
-# Abrir Pull Request no GitHub
 ```
 
 ---
@@ -104,10 +86,10 @@ git push origin feature/minha-feature
 ### Debug de Testes
 
 ```bash
-npm test -- --verbose                                   # Verbose
+npm test -- --verbose                                   # Output detalhado
 npm test -- --clearCache                                # Limpar cache
 node --inspect-brk node_modules/.bin/jest --runInBand  # Node.js debugger
-npm test -- --runInBand --no-cache fileScanner.test.js # Teste isolado
+npm test --workspace=@r3xs-backup/core -- --runInBand --no-cache fileScanner.test.js
 ```
 
 ### Problemas Comuns
@@ -115,9 +97,7 @@ npm test -- --runInBand --no-cache fileScanner.test.js # Teste isolado
 | Problema | Solução |
 |----------|---------|
 | **Testes não rodam** | `npm test -- --clearCache && rm -rf node_modules && npm install` |
-| **CLI não executa** | `chmod +x src/index.js && node src/index.js --help` |
-| **Permissão negada (npm link)** | `sudo npm link` ou use nvm para evitar sudo |
-| **Cobertura não abre** | Linux: `xdg-open coverage/lcov-report/index.html`<br>macOS: `open coverage/...`<br>Windows: `start coverage/...` |
+| **Cobertura não abre** | Linux: `xdg-open coverage/lcov-report/index.html`<br>macOS: `open coverage/...` |
 | **Node.js versão errada** | `node --version` (>= 16.0.0) → `nvm install 16 && nvm use 16` |
 | **Testes falham só no CI** | `npm test -- --runInBand --coverage --verbose` (simula CI) |
 | **Mock não funciona** | `jest.clearAllMocks()` e `jest.resetModules()` no `beforeEach()` |
@@ -127,39 +107,27 @@ npm test -- --runInBand --no-cache fileScanner.test.js # Teste isolado
 ## 🧹 Limpeza e Manutenção
 
 ```bash
-# Reinstalar dependências
+# Reinstalar dependências (todos os pacotes)
 rm -rf node_modules package-lock.json && npm install
 
-# Limpar arquivos de teste
-rm -rf backup-* test-easyroms coverage
-
-# Limpar cache do Jest
+# Limpar cache e relatórios
 npm test -- --clearCache
+rm -rf coverage
 
 # Limpeza completa
-rm -rf node_modules coverage backup-* test-easyroms && npm install
+rm -rf node_modules coverage && npm install
 ```
 
 ---
 
 ## 💡 Dicas e Boas Práticas
 
-### Durante Desenvolvimento
-- ✅ Mantenha `npm run test:watch` rodando
-- ✅ Escreva testes antes do código (TDD)
-- ✅ Commits pequenos e frequentes
-- ✅ Use mensagens de commit semânticas
-
-### Antes de Commit
-- ✅ Rode `npm test` para garantir que tudo passa
-- ✅ Verifique se não há console.log esquecido
-- ✅ Certifique-se de que o código está formatado
-
-### Antes de Pull Request
-- ✅ Rode `npm run test:coverage` (mínimo 80%)
-- ✅ Atualize documentação se necessário
-- ✅ Teste manualmente o CLI
-- ✅ Leia o guia de contribuição (CONTRIBUTING.md)
+- ✅ Mantenha `npm run test:watch` rodando durante o desenvolvimento
+- ✅ Escreva testes antes do código (TDD) — veja [TESTING.md](./TESTING.md)
+- ✅ Commits pequenos, frequentes e semânticos
+- ✅ Rode `npm test` e `npm run lint` antes de cada commit
+- ✅ Rode `npm run test:coverage` antes de abrir PR (mínimo 80%)
+- ✅ Atualize `devdocs/` sempre que alterar comportamento ou estrutura
 
 ---
 
@@ -175,6 +143,8 @@ rm -rf node_modules coverage backup-* test-easyroms && npm install
 - [ROADMAP.md](./ROADMAP.md) - Plano de evolução
 - [ADR-001](./adrs/ADR-001-tech-stack.md) - Decisão de tech stack
 - [ADR-002](./adrs/ADR-002-file-filtering-strategy.md) - Estratégia de filtros
+- [ADR-003](./adrs/ADR-003-monorepo-structure.md) - Estrutura monorepo
+- [ADR-004](./adrs/ADR-004-electron-desktop-architecture.md) - Arquitetura desktop Electron
 - [INDEX.md](./INDEX.md) - Índice completo da documentação
 
 ### Links Externos Úteis
@@ -187,4 +157,4 @@ rm -rf node_modules coverage backup-* test-easyroms && npm install
 
 **Dúvidas?** Abra uma issue no GitHub!
 
-**Última Atualização:** 19/03/2026
+**Última Atualização:** 21/03/2026

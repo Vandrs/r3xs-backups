@@ -1,0 +1,59 @@
+{
+  "name": "@r3xs-backup/desktop",
+  "version": "1.0.0",
+  "description": "Interface desktop Electron para backup de ROMs e save states de R36S/R35S",
+  "main": "src/main/index.js",
+  "author": "",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
+    "build:all": "electron-builder --win --linux",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src tests"
+  },
+  "dependencies": {
+    "@r3xs-backup/core": "*"
+  },
+  "devDependencies": {
+    "electron": "28.1.0",
+    "electron-builder": "24.9.1",
+    "jest": "29.7.0",
+    "eslint": "8.56.0"
+  },
+  "build": {
+    "appId": "com.r3xs.backup",
+    "productName": "R3XS Backup",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": ["nsis"],
+      "icon": "assets/icon.png"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon": "assets/icon.png",
+      "category": "Utility"
+    }
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageDirectory": "../../coverage/desktop",
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ]
+  }
+}

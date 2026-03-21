@@ -1,32 +1,41 @@
 {
   "name": "r3xs-backup-monorepo",
   "version": "1.0.0",
-  "description": "Monorepo para ferramentas de backup R36S/R35S",
+  "description": "Monorepo para ferramentas de backup R36S/R35S — CLI e aplicação Desktop (Electron)",
   "private": true,
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
     "test": "npm test --workspaces --if-present",
+    "test:core": "npm test --workspace=@r3xs-backup/core",
+    "test:cli": "npm test --workspace=@r3xs-backup/cli",
+    "test:desktop": "npm test --workspace=@r3xs-backup/desktop",
     "test:watch": "npm run test:watch --workspaces --if-present",
     "test:coverage": "npm run test:coverage --workspaces --if-present",
+    "test:coverage:core": "npm run test:coverage --workspace=@r3xs-backup/core",
+    "test:coverage:cli": "npm run test:coverage --workspace=@r3xs-backup/cli",
+    "test:coverage:desktop": "npm run test:coverage --workspace=@r3xs-backup/desktop",
     "lint": "npm run lint --workspaces --if-present",
-    "start": "npm start --workspace=@r3xs-backup/cli"
+    "start:cli": "npm start --workspace=@r3xs-backup/cli",
+    "dev:desktop": "npm run dev --workspace=@r3xs-backup/desktop",
+    "build:desktop": "npm run build --workspace=@r3xs-backup/desktop",
+    "build:desktop:win": "npm run build:win --workspace=@r3xs-backup/desktop",
+    "build:desktop:linux": "npm run build:linux --workspace=@r3xs-backup/desktop"
   },
   "keywords": [
     "r36s",
     "r35s",
     "arkos",
     "backup",
-    "monorepo"
+    "monorepo",
+    "electron",
+    "desktop"
   ],
   "author": "",
   "license": "MIT",
   "engines": {
     "node": ">=16.0.0"
   },
-  "devDependencies": {
-    "jest": "29.7.0",
-    "eslint": "8.56.0"
-  }
+  "devDependencies": {}
 }

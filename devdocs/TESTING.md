@@ -9,32 +9,38 @@ Este projeto segue a metodologia **Test-Driven Development (TDD)**. Os testes s�
 ## Estrutura de Testes
 
 ```
-tests/
-├── unit/              # Testes unitários (funções isoladas)
-│   ├── fileScanner.test.js
-│   ├── fileCopier.test.js
-│   └── conflictResolver.test.js
-└── integration/       # Testes de integração (fluxo completo)
-    └── backup.test.js
+packages/
+├── core/tests/
+│   ├── unit/
+│   │   ├── fileScanner.test.js
+│   │   ├── fileCopier.test.js
+│   │   ├── conflictResolver.test.js
+│   │   └── validators.test.js
+│   └── integration/
+│       └── backup.test.js
+├── cli/tests/
+│   ├── unit/backup.test.js
+│   └── integration/backup.test.js
+└── desktop/tests/
+    └── unit/ipc-handlers.test.js
 ```
 
 ## Executar Testes
 
 ```bash
-# Todos os testes
+# Todos os pacotes
 npm test
-
-# Modo watch (desenvolvimento)
 npm run test:watch
-
-# Com cobertura
 npm run test:coverage
 
-# Apenas um arquivo
-npm test -- fileScanner.test.js
+# Pacote específico
+npm test --workspace=@r3xs-backup/core
+npm test --workspace=@r3xs-backup/cli
+npm test --workspace=@r3xs-backup/desktop
 
-# Com verbose
-npm test -- --verbose
+# Arquivo ou teste específico (dentro de um pacote)
+npm test --workspace=@r3xs-backup/core -- fileScanner.test.js
+npm test --workspace=@r3xs-backup/core -- -t "deve copiar"
 ```
 
 ## Convenções de Testes
@@ -81,58 +87,35 @@ test('deve fazer algo', async () => {
 npm run test:coverage
 ```
 
-Abre relatório em `coverage/lcov-report/index.html`
+Relatórios gerados em `coverage/core/`, `coverage/cli/` e `coverage/desktop/`.
 
-## Testes Unitários
+## Testes por Pacote
 
-### fileScanner.test.js
+### `@r3xs-backup/core`
 
-Testa busca de arquivos:
-- ✅ Busca recursiva
-- ✅ Filtro por modo (full vs saves-only)
-- ✅ Case-insensitive
-- ✅ Diretórios vazios/inexistentes
+- **fileScanner** — busca recursiva, filtro por modo (full/saves-only), case-insensitive, dirs vazios
+- **conflictResolver** — estratégias overwrite, skip e newer
+- **fileCopier** — preserva estrutura, respeita estratégias, contabiliza sucessos/falhas/pulados
+- **backup (integração)** — fluxo completo: full e saves-only em estrutura ArkOS simulada
 
-### conflictResolver.test.js
+### `@r3xs-backup/cli`
 
-Testa estratégias de conflito:
-- ✅ Overwrite (sempre copia)
-- ✅ Skip (nunca copia se existe)
-- ✅ Newer (copia se mais recente)
+- **backup (unit)** — validação de argumentos, saída de erro no CLI
+- **backup (integração)** — execução end-to-end via interface de linha de comando
 
-### fileCopier.test.js
+### `@r3xs-backup/desktop`
 
-Testa cópia de arquivos:
-- ✅ Preserva estrutura de diretórios
-- ✅ Respeita estratégias
-- ✅ Conta sucessos/falhas/pulados
-- ✅ Cria diretórios intermediários
-
-## Testes de Integração
-
-### backup.test.js
-
-Testa fluxo completo:
-- ✅ Backup full de estrutura ArkOS
-- ✅ Backup saves-only
-- ✅ Verificação de arquivos copiados
+- **ipc-handlers** — handlers IPC do Electron: comunicação renderer↔main, erros e respostas
 
 ## Mocks e Stubs
 
-Evitamos mocks excessivos. Preferimos:
-- **Testes unitários**: Filesystem real em temp dir
-- **Testes de integração**: Estrutura completa simulada
+Evitamos mocks excessivos. Preferimos filesystem real em `os.tmpdir()`.
 
-Quando mockar:
+Mockar apenas `console.*` e `process.exit`:
+
 ```javascript
-// Mockar console para testes silenciosos
-const originalLog = console.log;
-console.log = jest.fn();
-
-// Executar teste...
-
-// Restaurar
-console.log = originalLog;
+jest.spyOn(console, 'error').mockImplementation(() => {});
+jest.spyOn(process, 'exit').mockImplementation(() => {});
 ```
 
 ## CI/CD
@@ -141,25 +124,9 @@ Os testes rodam automaticamente no CI antes de merge. Nenhum PR pode ser mergead
 
 ## Troubleshooting
 
-### Testes pendurando
-
-- Verificar se há `await` faltando
-- Usar `jest.setTimeout(10000)` para testes lentos
-- Verificar se cleanup (`afterEach`) está rodando
-
-### Testes flaky (instáveis)
-
-- Evitar `setTimeout` nos testes
-- Usar `await` em vez de callbacks
-- Garantir isolamento entre testes
-
-### Coverage baixa
-
-```bash
-# Ver o que não está coberto
-npm run test:coverage
-open coverage/lcov-report/index.html
-```
+- **Testes pendurando** — verificar `await` faltando; usar `jest.setTimeout(10000)` para testes lentos
+- **Testes flaky** — evitar `setTimeout`; garantir isolamento via `afterEach`
+- **Coverage baixa** — abrir `coverage/<package>/lcov-report/index.html` para ver linhas descobertas
 
 ## Recursos
 

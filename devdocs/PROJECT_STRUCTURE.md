@@ -1,235 +1,133 @@
 # Estrutura e Visão Geral do Projeto
 
-## 🎮 R3XS Backups
+## 🎮 R3XS Backup
 
-**Ferramenta CLI para backup de ROMs e save states de handhelds R36S/R35S com ArkOS**
-
----
-
-## ✅ Status do Projeto
-
-**Data:** 18/03/2026  
-**Versão:** 1.0.0 (em desenvolvimento)  
-**Fase:** MVP CLI
-
-### 📊 Métricas
-
-| Métrica | Valor |
-|---------|-------|
-| **Arquivos JavaScript** | 10 |
-| **Arquivos de Teste** | 6 |
-| **Linhas de Código (src/)** | ~335 |
-| **Linhas de Teste** | ~600 |
-| **Cobertura de Testes** | 84.34% |
-| **Ratio Teste/Código** | 1.79:1 ✅ |
-
-### 📊 Documentação
-
-| Tipo | Quantidade |
-|------|------------|
-| README.md (raiz) | 1 |
-| Arquivos em devdocs/ | 7 |
-| ADRs em devdocs/adrs/ | 2 |
-| Total de Linhas de Doc | ~1,150 (pós-otimização) |
+**Ferramenta de backup de ROMs e save states de handhelds R36S/R35S com ArkOS.**  
+Monorepo com 3 pacotes npm: `core`, `cli` e `desktop`.
 
 ---
 
-## 🏗️ Arquitetura
+## 📅 Status
 
-### Tech Stack
+**Data:** 21/03/2026 | **Versão:** 1.0.0 (em desenvolvimento) | **Fase:** Monorepo (core + CLI + Desktop)
 
-- **Runtime:** Node.js ≥16.0.0
-- **CLI Framework:** Commander.js 11.x
-- **Filesystem:** fs-extra 11.x
-- **Testes:** Jest 29.x
-- **UI Terminal:** chalk + ora
+---
 
-### Estrutura de Diretórios
+## 🏗️ Tech Stack
+
+| Camada | Tecnologia |
+|--------|------------|
+| Runtime | Node.js ≥ 16.0.0 |
+| CLI | Commander.js 11.x, chalk, ora |
+| Desktop | Electron 28.x, electron-builder 24.x |
+| Filesystem | fs-extra 11.x |
+| Testes | Jest 29.x |
+| Workspaces | npm workspaces |
+
+---
+
+## 📁 Estrutura de Diretórios
 
 ```
 r3xs-backup/
-├── src/                      # Código-fonte principal
-│   ├── index.js             # Entry point da aplicação CLI
-│   ├── commands/            # Comandos do Commander.js
-│   │   └── backup.js        # Comando principal de backup
-│   ├── services/            # Lógica de negócio
-│   │   ├── fileScanner.js   # Busca recursiva de arquivos
-│   │   ├── fileCopier.js    # Cópia de arquivos com estratégias
-│   │   └── conflictResolver.js # Resolução de conflitos
-│   └── utils/               # Utilidades auxiliares
-│       └── validators.js    # Validações de entrada
-├── tests/                   # Testes automatizados
-│   ├── unit/               # Testes unitários
-│   │   ├── backup.test.js
-│   │   ├── fileScanner.test.js
-│   │   ├── fileCopier.test.js
-│   │   ├── conflictResolver.test.js
-│   │   └── validators.test.js
-│   └── integration/        # Testes de integração
-│       └── backup.test.js
-├── devdocs/                # Documentação técnica
-│   ├── adrs/              # Architecture Decision Records
-│   │   ├── ADR-001-tech-stack.md
-│   │   └── ADR-002-file-filtering-strategy.md
-│   ├── PROJECT_STRUCTURE.md
-│   ├── INDEX.md
-│   ├── DEVELOPERS_GUIDE.md
-│   ├── TESTING.md
-│   ├── ROADMAP.md
-│   ├── CONTRIBUTING.md
-│   └── VERIFICATION_CHECKLIST.md
-├── package.json            # Dependências e scripts
-├── .gitignore             # Arquivos ignorados pelo Git
-├── LICENSE                # Licença MIT
-├── README.md              # Documentação de uso
-├── GETTING_STARTED.md     # Guia de início rápido
-├── QUICK_REFERENCE.md     # Referência rápida
-└── INDEX.md               # Índice da documentação
+├── packages/
+│   ├── core/                   # @r3xs-backup/core — lógica de negócio
+│   │   ├── src/
+│   │   │   ├── index.js        # API pública (scanFiles, copyFiles, validatePaths, resolveConflict)
+│   │   │   ├── services/       # fileScanner, fileCopier, conflictResolver
+│   │   │   └── utils/          # validators
+│   │   └── tests/
+│   ├── cli/                    # @r3xs-backup/cli — ferramenta CLI
+│   │   ├── src/
+│   │   │   ├── index.js        # Entry point Commander.js
+│   │   │   └── commands/backup.js
+│   │   └── tests/
+│   └── desktop/                # @r3xs-backup/desktop — GUI Electron
+│       ├── src/
+│       │   ├── main/           # Processo principal + handlers IPC
+│       │   ├── preload/        # contextBridge API
+│       │   └── renderer/       # HTML + CSS + JS (UI)
+│       ├── assets/             # icon.png
+│       └── tests/
+├── devdocs/                    # Documentação técnica
+├── package.json                # Workspace root
+└── .eslintrc.js
 ```
 
 ---
 
 ## 📦 Responsabilidades dos Módulos
 
-### `src/index.js`
-- Entry point da aplicação
-- Configuração do Commander.js
-- Parsing de argumentos CLI
-- Delegação para comandos
+### `packages/core`
+| Arquivo | Responsabilidade |
+|---------|-----------------|
+| `src/index.js` | API pública do pacote core |
+| `src/services/fileScanner.js` | Busca recursiva de arquivos com filtros por extensão |
+| `src/services/fileCopier.js` | Cópia de arquivos preservando estrutura de diretórios |
+| `src/services/conflictResolver.js` | Estratégias de conflito: `overwrite`, `skip`, `newer` |
+| `src/utils/validators.js` | Validação de caminhos e permissões |
 
-### `src/commands/backup.js`
-- Implementa o comando `backup`
-- Validação de parâmetros
-- Orquestração dos serviços
-- Feedback visual (spinner, cores)
+### `packages/cli`
+| Arquivo | Responsabilidade |
+|---------|-----------------|
+| `src/index.js` | Configuração do Commander.js e parsing de args |
+| `src/commands/backup.js` | Orquestração do fluxo de backup, feedback visual |
 
-### `src/services/fileScanner.js`
-- Busca recursiva de arquivos
-- Filtros por extensão (`--full` vs `--saves-only`)
-- Retorna lista de arquivos a copiar
-
-### `src/services/fileCopier.js`
-- Cópia física dos arquivos
-- Preservação de estrutura de diretórios
-- Tratamento de erros de I/O
-
-### `src/services/conflictResolver.js`
-- Implementa estratégias: `overwrite`, `skip`, `newer`
-- Comparação de timestamps
-- Decisões de substituição
-
-### `src/utils/validators.js`
-- Validação de caminhos
-- Verificação de existência de diretórios
-- Validação de permissões
+### `packages/desktop`
+| Arquivo | Responsabilidade |
+|---------|-----------------|
+| `src/main/index.js` | Processo principal do Electron |
+| `src/main/ipc-handlers.js` | Handlers IPC que delegam ao core |
+| `src/preload/index.js` | contextBridge expõe API ao renderer |
+| `src/renderer/` | Interface gráfica (HTML/CSS/JS) |
 
 ---
 
 ## 🔄 Fluxo de Dados
 
 ```
-CLI Input
-    ↓
-index.js (Commander)
-    ↓
-commands/backup.js
-    ↓
-    ├──→ validators.js (validação)
-    ↓
-    ├──→ fileScanner.js (busca arquivos)
-    ↓
-    ├──→ conflictResolver.js (verifica conflitos)
-    ↓
-    └──→ fileCopier.js (copia arquivos)
+CLI:
+  index.js (Commander) → commands/backup.js → @r3xs-backup/core
+
+Desktop:
+  Renderer → IPC → main/ipc-handlers.js → @r3xs-backup/core
 ```
-
----
-
-## ✨ Features Implementadas
-
-### Core Functionality
-- ✅ **Backup Full:** Copia todos os arquivos recursivamente
-- ✅ **Backup Saves-Only:** Filtra arquivos com "state" na extensão
-- ✅ **Busca Recursiva:** Varre toda árvore de diretórios
-- ✅ **Preserva Estrutura:** Mantém hierarquia de pastas
-
-### Estratégias de Conflito
-- ✅ **Overwrite:** Sobrescreve sempre
-- ✅ **Skip:** Ignora duplicados
-- ✅ **Newer:** Sobrescreve apenas se mais recente (padrão)
-
-### User Experience
-- ✅ Feedback visual (spinner + cores)
-- ✅ Estatísticas de backup (sucesso/falha/ignorados)
-- ✅ Validação de caminhos
-- ✅ Mensagens de erro claras
-
-### Quality Assurance
-- ✅ TDD (Test-Driven Development)
-- ✅ Testes unitários (isolados)
-- ✅ Testes de integração (end-to-end)
-- ✅ Cobertura de código: 84.34%
 
 ---
 
 ## 🧪 Testes
 
-### Estrutura de Testes
-
-- **Unit tests**: Testam funções isoladas com mocks
-- **Integration tests**: Testam fluxo completo com filesystem temporário
-
-### Cobertura Atual
-
-| Módulo | Statements | Branches | Functions | Lines |
-|--------|-----------|----------|-----------|-------|
-| **Total** | **84.34%** | **72.72%** | **100%** | **84.21%** |
-| commands/ | 70.00% | 55.55% | 100% | 69.23% |
-| services/ | 90.47% | 81.81% | 100% | 90.47% |
-| utils/ | 100% | 100% | 100% | 100% |
-
-### Executar Testes
+### Executar
 
 ```bash
-npm test              # Todos os testes
-npm run test:watch   # Modo watch
-npm run test:coverage # Com cobertura
+npm test                        # Todos os workspaces
+npm test -w @r3xs-backup/core   # Apenas core
+npm run test:coverage           # Com relatório de cobertura
 ```
 
-## 💻 Convenções de Código
+### Metas de Cobertura
 
-- **ES6+**: Módulos ES6, async/await
-- **Naming**: camelCase para funções e variáveis
-- **Exports**: Named exports para serviços
-- **Error Handling**: Try/catch em operações assíncronas
-- **Tests**: Padrão AAA (Arrange-Act-Assert)
+| Escopo | Mínimo |
+|--------|--------|
+| Services | 90% |
+| Commands | 80% |
+| Utils | 95% |
 
 ---
 
-## 🚀 Build e Deploy
-
-### Desenvolvimento Local
+## 🚀 Desenvolvimento Local
 
 ```bash
-npm install
-npm link
-r3xs-backup --help
-```
-
-### Publicação NPM (futuro)
-
-```bash
-npm version patch|minor|major
-npm publish
+npm install          # Instala todas as dependências (workspaces)
+npm start            # Executa a CLI
 ```
 
 ---
 
 ## 📄 Licença
 
-MIT License - Veja [LICENSE](../LICENSE) para detalhes.
+MIT License — veja [LICENSE](../LICENSE) para detalhes.
 
 ---
 
-**Última Atualização:** 19/03/2026  
-**Status:** ✅ Estrutura consolidada e documentada
+**Última Atualização:** 21/03/2026 | **Status:** ✅ Monorepo estruturado e documentado
