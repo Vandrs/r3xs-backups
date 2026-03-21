@@ -69,12 +69,15 @@ Abra um PR no GitHub com descrição clara, screenshots (se aplicável) e o chec
 
 ## Checklist do PR
 
+- [ ] Node.js >= 16.0.0 (`node --version`)
 - [ ] Código segue o style guide
 - [ ] Lint sem erros (`npm run lint`)
 - [ ] Todos os testes passam (`npm test`)
 - [ ] Cobertura adequada por workspace (`npm run test:coverage`): services ≥ 90%, commands ≥ 80%, utils ≥ 95%
+- [ ] Smoke test: `--help` e `--version` funcionam corretamente
 - [ ] Sem `console.log` ou `debugger` esquecidos
 - [ ] JSDoc presente em todas as funções exportadas
+- [ ] `node_modules` ausente do repositório (`.gitignore` correto)
 - [ ] `devdocs/` atualizado se comportamento ou estrutura mudou
 - [ ] Commits seguem padrão semântico
 

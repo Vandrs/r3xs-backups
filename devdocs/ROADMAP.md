@@ -2,8 +2,8 @@
 
 ## Fase 1: CLI MVP ✅ (Atual)
 
-**Status:** Em desenvolvimento  
-**Target:** v1.0.0  
+**Status:** Concluído  
+**Versão:** v1.0.0  
 
 ### Features
 - [x] Backup full (todos os arquivos)
@@ -63,12 +63,12 @@ r3xs-backup --restore ~/backups/2026-03-18 --dest /media/sdcard
 
 ## Fase 3: GUI com Electron
 
-**Status:** Planejado  
-**Target:** v2.0.0  
+**Status:** Em desenvolvimento  
+**Target:** v2.0.0 (parcial)  
 
 ### Features
-- [ ] Interface gráfica desktop (Electron)
-- [ ] Configurações visuais
+- [x] Interface gráfica desktop (Electron)
+- [x] Configurações visuais (source/dest paths, backup mode, conflict strategy)
 - [ ] Histórico de backups com timeline
 - [ ] Visualização de saves (thumbnails)
 - [ ] Agendamento de backups
@@ -92,7 +92,7 @@ r3xs-backup --restore ~/backups/2026-03-18 --dest /media/sdcard
 │  [📁 Adicionar Profile] [▶️ Fazer Backup] │
 ├─────────────────────────────────────────┤
 │  Histórico de Backups:                   │
-│  ✅ 18/03/2026 10:30 - 1.2GB (450 arqs)  │
+│  ✅ 21/03/2026 10:30 - 1.2GB (450 arqs)  │
 │  ✅ 17/03/2026 18:15 - 1.1GB (445 arqs)  │
 │  ✅ 15/03/2026 09:00 - 1.0GB (432 arqs)  │
 └─────────────────────────────────────────┘
@@ -101,14 +101,11 @@ r3xs-backup --restore ~/backups/2026-03-18 --dest /media/sdcard
 ### Arquitetura Electron
 
 ```
-electron-app/
-├── main.js              (Main process - Node.js)
-├── preload.js           (Bridge seguro)
-├── renderer/
-│   ├── index.html
-│   ├── styles.css
-│   └── app.js          (Renderer process)
-└── src/                (Reutilizar código CLI)
+packages/desktop/
+├── src/main/        (Main process + IPC handlers)
+├── src/preload/     (contextBridge API)
+├── src/renderer/    (HTML + CSS + JS)
+└── assets/          (icon)
 ```
 
 ---
@@ -163,7 +160,7 @@ electron-app/
 - [ ] Homebrew formula
 
 ### Qualidade
-- [ ] Linting (ESLint)
+- [x] Linting (ESLint)
 - [ ] Formatação (Prettier)
 - [ ] Commit hooks (Husky)
 - [ ] Changelog automático

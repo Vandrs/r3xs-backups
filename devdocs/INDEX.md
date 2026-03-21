@@ -9,8 +9,7 @@ Guia de navegação da documentação do R3XS Backups.
 
 ### Começar
 - **[DEVELOPERS_GUIDE.md](./DEVELOPERS_GUIDE.md)** - Setup inicial e comandos essenciais
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Como contribuir com código
-- **[VERIFICATION_CHECKLIST.md](./VERIFICATION_CHECKLIST.md)** - Checklist de verificação
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Como contribuir com código (inclui checklist do PR)
 
 ### Arquitetura e Testes
 - **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)** - Visão geral da arquitetura e métricas
