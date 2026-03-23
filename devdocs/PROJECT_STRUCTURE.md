@@ -34,6 +34,8 @@ r3xs-backup/
 │   ├── core/                   # @r3xs-backup/core — lógica de negócio
 │   │   ├── src/
 │   │   │   ├── index.js        # API pública (scanFiles, copyFiles, validatePaths, resolveConflict)
+│   │   │   ├── config/         # configurações compartilhadas (backupExtensions.js)
+│   │   │   │   └── backupExtensions.js
 │   │   │   ├── services/       # fileScanner, fileCopier, conflictResolver
 │   │   │   └── utils/          # validators
 │   │   └── tests/
@@ -66,6 +68,7 @@ r3xs-backup/
 | `src/services/fileCopier.js` | Cópia de arquivos preservando estrutura de diretórios |
 | `src/services/conflictResolver.js` | Estratégias de conflito: `overwrite`, `skip`, `newer` |
 | `src/utils/validators.js` | Validação de caminhos e permissões |
+| `src/config/backupExtensions.js` | Fonte única de verdade para extensões de save states e battery saves |
 
 ### `packages/cli`
 | Arquivo | Responsabilidade |

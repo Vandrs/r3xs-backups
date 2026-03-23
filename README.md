@@ -53,7 +53,7 @@ A aplicação desktop oferece uma interface visual intuitiva para gerenciar seus
 | `--source <path>` | Caminho da pasta easyroms no cartão SD | ✅ Sim |
 | `--dest <path>` | Caminho de destino do backup | ✅ Sim |
 | `--full` | Backup completo (todos os arquivos) | Sim* |
-| `--saves-only` | Backup apenas de save states | Sim* |
+| `--saves-only` | Backup apenas de save states — captura tanto save states (arquivos com `state` no nome: `.state`, `.state1`, `.savestate`, etc.) quanto battery saves (`.srm`, `.sav`, `.mcr`) | Sim* |
 | `--conflict <strategy>` | Estratégia de conflito: `overwrite`, `skip`, `newer` | Não (padrão: `newer`) |
 
 \* Você deve escolher `--full` **OU** `--saves-only`

@@ -158,3 +158,35 @@ rm -rf node_modules coverage && npm install
 **Dúvidas?** Abra uma issue no GitHub!
 
 **Última Atualização:** 21/03/2026
+
+---
+
+## ⚙️ Como adicionar novas extensões de save/state
+
+As extensões reconhecidas pelo modo `--saves-only` estão centralizadas em um único arquivo de configuração para facilitar manutenção e evitar divergências entre módulos.
+
+- Local do arquivo: `packages/core/src/config/backupExtensions.js`
+
+- Para adicionar uma nova extensão de battery save (por exemplo, `.sram`) edite o array `SAVES_EXTENSIONS` e acrescente a string com a extensão — mantenha o ponto no início:
+
+```js
+// packages/core/src/config/backupExtensions.js
+const SAVES_EXTENSIONS = ['.srm', '.sav', '.mcr', '.sram'];
+```
+
+- Para adicionar um novo padrão de state que não use extensão fixa (por exemplo, arquivos contendo `quicksave` no nome), edite o array `STATES_PATTERNS` adicionando a string ou expressão que represente o padrão (padrões simples são comparados com includes):
+
+```js
+// packages/core/src/config/backupExtensions.js
+const STATES_PATTERNS = ['state', 'savestate', 'quicksave'];
+```
+
+- Depois de alterar o arquivo, valide a mudança executando os testes do pacote core:
+
+```bash
+npm test --workspace=@r3xs-backup/core
+```
+
+Observações:
+- Mantenha o arquivo em formato simples e declarativo — preferimos arrays de strings para facilitar testes e leitura.
+- Se precisar de padrões mais complexos (regex), verifique a implementação do `fileScanner` para garantir suporte e adicione testes unitários cobrindo os novos casos.

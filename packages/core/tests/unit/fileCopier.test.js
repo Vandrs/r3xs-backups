@@ -143,5 +143,21 @@ describe('FileCopier', () => {
       expect(result.failed).toBe(1); // arquivo inválido
       expect(consoleErrorSpy).toHaveBeenCalled();
     });
+
+    test('deve usar estratégia "newer" quando conflictStrategy não for informada', async () => {
+      // Arrange
+      await fs.ensureDir(path.join(sourceDir, 'nes'));
+      await fs.writeFile(path.join(sourceDir, 'nes/game.nes'), 'content');
+
+      const files = [path.join(sourceDir, 'nes/game.nes')];
+
+      // Act: chamar sem o quarto argumento para exercitar o default 'newer'
+      const result = await copyFiles(files, sourceDir, destDir);
+
+      // Assert: arquivo não existia no destino, então deve copiar normalmente
+      expect(result.success).toBe(1);
+      expect(result.skipped).toBe(0);
+      expect(result.failed).toBe(0);
+    });
   });
 });

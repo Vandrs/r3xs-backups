@@ -1,6 +1,8 @@
 const fs = require('fs-extra');
 const path = require('path');
 
+const { isSaveFile } = require('../config/backupExtensions');
+
 /**
  * Escaneia recursivamente um diretório e retorna lista de arquivos
  * @param {string} sourcePath - Caminho do diretório a escanear
@@ -56,8 +58,7 @@ function shouldIncludeFile(filePath, mode) {
   }
 
   if (mode === 'saves-only') {
-    const ext = path.extname(filePath).toLowerCase();
-    return ext.includes('state');
+    return isSaveFile(filePath);
   }
 
   return false;

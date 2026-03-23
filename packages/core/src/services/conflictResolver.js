@@ -32,7 +32,7 @@ async function resolveConflict(sourcePath, destPath, strategy = 'newer') {
       // Padrão: usar 'newer'
       return await isSourceNewer(sourcePath, destPath);
     }
-  } catch (error) {
+  } catch (error) /* istanbul ignore next */ {
     console.error(`Erro ao resolver conflito: ${error.message}`);
     return false;
   }

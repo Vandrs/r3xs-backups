@@ -93,7 +93,7 @@ describe('ConflictResolver', () => {
     test('deve retornar true se timestamps forem iguais', async () => {
       await fs.writeFile(sourceFile, 'content');
       await fs.writeFile(destFile, 'content');
-      
+
       // Forçar mesmo timestamp
       const stat = await fs.stat(sourceFile);
       await fs.utimes(destFile, stat.atime, stat.mtime);
@@ -112,6 +112,20 @@ describe('ConflictResolver', () => {
 
       const result = await resolveConflict(sourceFile, destFile, 'invalid');
 
+      expect(result).toBe(true);
+    });
+  });
+
+  describe('resolveConflict - erros internos', () => {
+    test('deve retornar true quando isSourceNewer falha ao acessar arquivo de origem', async () => {
+      // Arrange: destino existe, source não existe — fs.stat(sourcePath) lança ENOENT
+      // isSourceNewer captura o erro no seu próprio catch e retorna true (copia por segurança)
+      await fs.writeFile(destFile, 'existing content');
+
+      // Act
+      const result = await resolveConflict('/caminho/inexistente/source.txt', destFile, 'newer');
+
+      // Assert
       expect(result).toBe(true);
     });
   });
