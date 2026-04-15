@@ -51,7 +51,7 @@ r3xs-backup/
 │       │   └── renderer/       # HTML + CSS + JS (UI)
 │       ├── assets/             # icon.png
 │       └── tests/
-├── devdocs/                    # Documentação técnica
+├── docs/                       # Documentação técnica
 ├── package.json                # Workspace root
 └── .eslintrc.js
 ```
@@ -104,7 +104,7 @@ Desktop:
 
 ```bash
 npm test                        # Todos os workspaces
-npm test -w @r3xs-backup/core   # Apenas core
+npm test --workspace=@r3xs-backup/core   # Apenas core
 npm run test:coverage           # Com relatório de cobertura
 ```
 

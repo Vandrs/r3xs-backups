@@ -10,6 +10,7 @@ Guia de navegação da documentação do R3XS Backups.
 ### Começar
 - **[DEVELOPERS_GUIDE.md](./DEVELOPERS_GUIDE.md)** - Setup inicial e comandos essenciais
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Como contribuir com código (inclui checklist do PR)
+- **[MONOREPO_ONBOARDING.md](./MONOREPO_ONBOARDING.md)** - Onboarding rápido por pacote
 
 ### Arquitetura e Testes
 - **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)** - Visão geral da arquitetura e métricas
@@ -44,7 +45,7 @@ Guia de navegação da documentação do R3XS Backups.
 ## 📧 Faltou Algo?
 
 Se você não encontrou o que procurava:
-1. Use o comando `grep -r "sua busca" devdocs/`
+1. Use o comando `grep -r "sua busca" docs/`
 2. Abra uma issue no GitHub
 3. Consulte os maintainers
 

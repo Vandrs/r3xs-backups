@@ -14,13 +14,25 @@ O **R3XS Backups** facilita o backup dos seus jogos e saves do handheld R36S/R35
 
 ### ⌨️ CLI (Linha de Comando)
 
+Observação: o repositório é um monorepo privado. A forma mais comum de usar em desenvolvimento
+é instalar dependências no root e executar o pacote CLI a partir do workspace. Se houver um pacote
+publicado no npm com o nome `r3xs-backup`, instale globalmente; caso contrário, prefira executar
+localmente via npm scripts.
+
 ```bash
-npm install -g r3xs-backup
+# Instalar dependências (root)
+npm install
+
+# Executar o CLI em desenvolvimento (root)
+npm run start:cli
+
+# Ou executar explicitamente o workspace (padrão recomendado nas docs)
+npm start --workspace=@r3xs-backup/cli -- --source /mnt/sdcard --dest ~/backup --full
 ```
 
 ### 🖥️ Desktop App (Interface Gráfica)
 
-Baixe o instalador para sua plataforma na seção [Releases](../../releases):
+Baixe o instalador para sua plataforma na seção [Releases](https://github.com/Vandrs/r3xs-backup/releases) (se houver builds publicados) ou gere localmente usando o script de build do pacote desktop.
 
 - **Windows**: `R3XS-Backup-Setup-X.X.X.exe`
 - **Linux**: `R3XS-Backup-X.X.X.AppImage` ou `.deb`
@@ -97,7 +109,7 @@ A ferramenta busca **recursivamente** em todas as subpastas de `easyroms`.
 
 ## 🤝 Para Contribuidores
 
-Contribuições são bem-vindas! Consulte o [guia de contribuição](./devdocs/CONTRIBUTING.md) para instruções detalhadas.
+Contribuições são bem-vindas! Consulte o [guia de contribuição](./docs/CONTRIBUTING.md) para instruções detalhadas.
 
 ## 📄 Licença
 

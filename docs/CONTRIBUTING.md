@@ -78,7 +78,7 @@ Abra um PR no GitHub com descrição clara, screenshots (se aplicável) e o chec
 - [ ] Sem `console.log` ou `debugger` esquecidos
 - [ ] JSDoc presente em todas as funções exportadas
 - [ ] `node_modules` ausente do repositório (`.gitignore` correto)
-- [ ] `devdocs/` atualizado se comportamento ou estrutura mudou
+- [ ] `docs/` atualizado se comportamento ou estrutura mudou
 - [ ] Commits seguem padrão semântico
 
 ---

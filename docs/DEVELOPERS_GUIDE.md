@@ -15,11 +15,13 @@ npm install
 # 2. Verificar instalação
 npm test
 
-# 3. Executar o CLI
-npm start -- --source ./test-easyroms --dest ./backup --full
+# 3. Executar o CLI (recomendado via start:cli)
+npm run start:cli
+# ou explicitamente por workspace
+npm start --workspace=@r3xs-backup/cli -- --source ./test-easyroms --dest ./backup --full
 
-# 4. Executar a interface desktop
-npm run dev
+# 4. Executar a interface desktop (dev)
+npm run dev:desktop
 ```
 
 ---
@@ -36,11 +38,11 @@ npm run dev
 | | `npm test --workspace=@r3xs-backup/desktop` | Apenas o pacote desktop |
 | | `npm test --workspace=@r3xs-backup/core -- fileScanner.test.js` | Arquivo de teste específico |
 | | `npm test -- -t "nome do teste"` | Teste por nome |
-| **CLI** | `npm start` | Executa `@r3xs-backup/cli` |
-| | `npm start -- --source /src --dest /dest --full` | Backup completo |
-| | `npm start -- --source /src --dest /dest --saves-only` | Apenas saves |
-| | `npm start -- --source /src --dest /dest --full --conflict skip` | Com estratégia de conflito |
-| **Desktop** | `npm run dev` | Inicia app Electron |
+| **CLI** | `npm run start:cli` | Executa `@r3xs-backup/cli` a partir do root (monorepo-aware) |
+| | `npm start --workspace=@r3xs-backup/cli -- --source /src --dest /dest --full` | Backup completo (execução explícita por workspace) |
+| | `npm start --workspace=@r3xs-backup/cli -- --source /src --dest /dest --saves-only` | Apenas saves (execução explícita por workspace) |
+| | `npm start --workspace=@r3xs-backup/cli -- --source /src --dest /dest --full --conflict skip` | Com estratégia de conflito (execução explícita por workspace) |
+| **Desktop** | `npm run dev:desktop` | Inicia app Electron (desenvolvimento via workspace) |
 | **Lint** | `npm run lint` | Lint em todos os pacotes |
 | | `npm run lint --workspace=@r3xs-backup/core` | Lint em pacote específico |
 | **Limpeza** | `rm -rf node_modules package-lock.json && npm install` | Reinstalar dependências |
@@ -127,7 +129,7 @@ rm -rf node_modules coverage && npm install
 - ✅ Commits pequenos, frequentes e semânticos
 - ✅ Rode `npm test` e `npm run lint` antes de cada commit
 - ✅ Rode `npm run test:coverage` antes de abrir PR (mínimo 80%)
-- ✅ Atualize `devdocs/` sempre que alterar comportamento ou estrutura
+- ✅ Atualize `docs/` sempre que alterar comportamento ou estrutura
 
 ---
 

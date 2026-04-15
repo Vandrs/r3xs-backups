@@ -6,32 +6,38 @@ Guidelines for agentic coding agents operating in this repository.
 
 ## Project Overview
 
-`r3xs-backup` is a **Node.js CLI tool** that backs up ROMs and save states from
-R36S/R35S handhelds running ArkOS. It copies files from an SD card's `easyroms/`
-folder to a local destination. There is no build or compilation step — source
-files in `src/` are run directly with Node.js.
+`r3xs-backup` é um monorepo Node.js que contém ferramentas para backup de ROMs e
+save states para handhelds R36S/R35S com ArkOS. O código está organizado em
+workspaces npm dentro da pasta `packages/`:
+
+- `packages/core` — lógica de negócio reutilizável (scan, copy, validações)
+- `packages/cli` — interface de linha de comando (CLI)
+- `packages/desktop` — aplicação Desktop (Electron)
 
 - **Language:** JavaScript (ES6+, CommonJS)
 - **Runtime:** Node.js ≥ 16.0.0
-- **Package manager:** npm (`save-exact=true` — all deps pinned to exact versions)
+- **Package manager:** npm (workspaces)
 
 ---
 
 ## Commands
 
 ```bash
-# Install dependencies
+# Instalar dependências (root - instala todos os workspaces)
 npm install
 
-# Run the CLI
-npm start
-# or
-node src/index.js --source /mnt/sdcard --dest ~/backup --full
+# Executar o CLI (a partir do root — preferível usar scripts do root para monorepo)
+npm run start:cli
+# ou explicitamente por workspace
+npm start --workspace=@r3xs-backup/cli -- --source /mnt/sdcard --dest ~/backup --full
 
-# Lint source and tests
-npm run lint            # eslint src tests
+# Executar a app Desktop em modo desenvolvimento (via root scripts)
+npm run dev:desktop
 
-# Run all tests
+# Lint em todos os workspaces
+npm run lint
+
+# Run all tests (todos os workspaces)
 npm test
 
 # Run tests in watch mode (during development)
@@ -44,20 +50,17 @@ npm run test:coverage
 ### Running a Single Test
 
 ```bash
-# Run a single test file by filename substring
-npm test -- fileScanner.test.js
-npm test -- conflictResolver.test.js
+# Run a single test file by filename within a workspace
+npm test --workspace=@r3xs-backup/core -- fileScanner.test.js
 
 # Run a single test (or group) by name substring
-npm test -- -t "deve copiar arquivos preservando estrutura"
-npm test -- -t "overwrite"
+npm test --workspace=@r3xs-backup/core -- -t "deve copiar arquivos preservando estrutura"
 
-# Run a single file with extra flags
-npm test -- --verbose fileScanner.test.js
-npm test -- --runInBand --no-cache fileCopier.test.js
+# Run a test with extra flags
+npm test --workspace=@r3xs-backup/core -- --verbose fileScanner.test.js
 ```
 
-Jest configuration lives directly in `package.json` (no separate `jest.config.js`).
+Jest configuration lives in package.json of each workspace (no separate global jest.config.js).
 Test files are discovered via the pattern `**/tests/**/*.test.js`.
 
 ### Coverage Targets
@@ -72,23 +75,16 @@ Test files are discovered via the pattern `**/tests/**/*.test.js`.
 
 ## Project Structure
 
+Monorepo com os workspaces principais dentro de `packages/`:
+
 ```
-src/
-├── index.js              # CLI entry point (Commander.js setup, process.exit)
-├── commands/
-│   └── backup.js         # Orchestrator: validates → scans → copies
-├── services/
-│   ├── fileScanner.js    # Recursive file discovery + filtering
-│   ├── fileCopier.js     # File copy with directory structure preservation
-│   └── conflictResolver.js  # Conflict resolution strategies (overwrite/skip/newer)
-└── utils/
-    └── validators.js     # Path validation utilities
-
-tests/
-├── unit/                 # One test file per service module
-└── integration/          # Full end-to-end flow (backup.test.js)
-
-devdocs/                  # All developer documentation
+r3xs-backup/
+├── packages/
+│   ├── core/     # @r3xs-backup/core — lógica de negócio (scan, copy, config)
+│   ├── cli/      # @r3xs-backup/cli — ferramenta CLI (Commander.js)
+│   └── desktop/  # @r3xs-backup/desktop — app Electron (UI + IPC)
+├── docs/
+└── package.json  # workspace root scripts e configurações
 ```
 
 ---
@@ -258,7 +254,7 @@ Before opening a PR, verify:
 - [ ] No stray `console.log` or `debugger` statements
 - [ ] JSDoc present on all new exported functions
 - [ ] Commits follow Conventional Commits format
-- [ ] `devdocs/` updated if behaviour or structure changed
+- [ ] `docs/` updated if behaviour or structure changed
 
 ---
 
