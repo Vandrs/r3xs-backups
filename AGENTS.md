@@ -260,13 +260,39 @@ Before opening a PR, verify:
 
 ## Diretriz para agentes autônomos
 
-Agentes autônomos (humanos ou bots) que buscam trabalho neste repositório devem consultar o board do GitHub "Roms warehouse" antes de planejar ou implementar tarefas. O board (https://github.com/users/Vandrs/projects/3) é a referência atual para quais issues/tarefas têm prioridade e qual o status de progresso. Não assuma uma lista fixa de colunas ou estados a partir deste arquivo — o board pode mudar e é a fonte de verdade para status e priorização.
+O board do GitHub **"Roms warehouse"** (https://github.com/users/Vandrs/projects/3) é a **fonte única de verdade** para todas as tarefas, roadmap e priorização deste projeto. Nenhuma documentação estática — incluindo este arquivo — substitui o estado atual do board. Não assuma uma lista fixa de colunas ou estados a partir deste arquivo — o board pode mudar e é sempre a referência definitiva.
 
-Procedimento mínimo recomendado para agentes:
+### Fluxo de trabalho obrigatório
 
-- Verifique o board "Roms warehouse" e identifique a tarefa a ser tratada.
-- Confirme a prioridade e qualquer comentário/nota no card antes de iniciar trabalho.
-- Se for iniciar trabalho, abra uma issue ou comentário vinculando-se ao card/issue correspondente para rastreabilidade.
-- Atualize o board (ou peça ao maintainer responsável) para refletir mudança de status quando o trabalho progredir.
+Tanto contribuidores humanos quanto agentes autônomos devem seguir este fluxo antes de iniciar qualquer trabalho:
 
-Esta diretriz evita descoordenação entre documentação estática e o estado real do trabalho no board.
+1. **Verifique o board antes de começar**
+   Acesse https://github.com/users/Vandrs/projects/3 e identifique os itens abertos e priorizados. Confirme a prioridade e leia comentários/notas no card antes de planejar qualquer implementação.
+
+2. **Evite duplicatas — pesquise issues existentes**
+   Antes de criar uma nova tarefa, pesquise as issues existentes no repositório para verificar se o problema ou funcionalidade já foi registrado. Apenas abra uma nova issue se confirmar que não há duplicata.
+
+3. **Registre toda tarefa como GitHub Issue antes de implementar**
+   Toda nova funcionalidade, correção de bug ou melhoria deve ser registrada como uma GitHub Issue e vinculada ao board **antes** de qualquer implementação começar. Não inicie código sem uma issue correspondente.
+
+4. **Mova o card para "In Progress" ao iniciar**
+   Ao assumir uma tarefa, mova o item correspondente no board para o status "In Progress" (ou equivalente atual). Isso sinaliza ao time que o trabalho está em andamento e evita retrabalho paralelo.
+
+5. **PRs devem referenciar a issue relacionada**
+   Todo Pull Request deve incluir no corpo a referência `Closes #NNN` (onde `NNN` é o número da issue). Isso vincula automaticamente o PR à issue e facilita o rastreamento.
+
+6. **Atualize o board após o merge**
+   Após o merge do PR, confirme que o item no board foi movido para "Done" (ou status equivalente). Se não tiver permissão para atualizar o board, solicite ao maintainer responsável.
+
+### Procedimento resumido para agentes
+
+```
+1. Consultar board → identificar tarefa priorizada
+2. Pesquisar issues existentes → evitar duplicata
+3. Criar/confirmar issue → vincular ao board
+4. Mover card para "In Progress"
+5. Implementar → abrir PR com "Closes #NNN"
+6. Após merge → mover card para "Done"
+```
+
+Esta diretriz evita descoordenação entre documentação estática e o estado real do trabalho no board. Em caso de conflito entre este arquivo e o board, **o board prevalece**.
