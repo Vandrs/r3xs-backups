@@ -1,7 +1,7 @@
 # Roadmap do Projeto
 
 > **⚠️ Fonte de verdade:** O roadmap vivo e a priorização oficial deste projeto são gerenciados no board do GitHub **"Roms warehouse"**:
-> 👉 https://github.com/users/Vandrs/projects/3
+> 👉 https://github.com/users/Vandrs/projects/3 (Project Number: `3` | Node ID GraphQL: `PVT_kwHOAE7hg84BUt_W`)
 >
 > Este arquivo é um **registro histórico e de referência**. Para o status atual das tarefas, prioridades e andamento do trabalho, consulte sempre o board. Em caso de divergência entre este documento e o board, **o board prevalece**.
 
@@ -210,7 +210,13 @@ Usamos a matriz de priorização:
 
 ### Referência de tasks
 
-O board do GitHub **"Roms warehouse"** (https://github.com/users/Vandrs/projects/3) é a **fonte única de verdade** para priorização e status das tasks. Consulte sempre o board para ver a priorização e o status atualizados. Este documento não lista colunas ou estados fixos para evitar desalinhamento — o board pode mudar a qualquer momento e é sempre a referência definitiva.
+O board do GitHub **"Roms warehouse"** é a **fonte única de verdade** para priorização e status das tasks. Consulte sempre o board para ver a priorização e o status atualizados. Este documento não lista colunas ou estados fixos para evitar desalinhamento — o board pode mudar a qualquer momento e é sempre a referência definitiva.
+
+| Campo | Valor |
+|---|---|
+| URL | https://github.com/users/Vandrs/projects/3 |
+| Project Number | `3` |
+| Node ID (GraphQL) | `PVT_kwHOAE7hg84BUt_W` |
 
 ## Changelog
 
