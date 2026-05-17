@@ -212,7 +212,7 @@ describe('FileScanner', () => {
   });
 
   describe('scanFiles - tratamento de erros', () => {
-    test('deve retornar array vazio e logar erro quando leitura do diretório falha', async () => {
+    test('deve retornar array vazio e logar erro quando leitura do diretório raiz falha', async () => {
       // Arrange: criar um arquivo no lugar de um diretório para forçar erro de readdir
       const fakeDir = path.join(testDir, 'not-a-dir');
       await fs.writeFile(fakeDir, 'sou um arquivo');
@@ -225,9 +225,159 @@ describe('FileScanner', () => {
       // Assert
       expect(files).toEqual([]);
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Erro ao escanear arquivos')
+        expect.stringContaining('Erro ao escanear')
       );
       consoleErrorSpy.mockRestore();
+    });
+
+    test('deve continuar escaneando outros diretórios quando um subdiretório falha na leitura', async () => {
+      // Arrange: estrutura com dois subdiretórios; o segundo tem arquivos válidos
+      await fs.ensureDir(path.join(testDir, 'ok'));
+      await fs.writeFile(path.join(testDir, 'ok/game.state'), 'save');
+      // Criar arquivo com mesmo nome que diretório referenciado — simula dir inacessível
+      // Usamos chmod para tirar permissão de leitura do subdir 'locked'
+      const lockedDir = path.join(testDir, 'locked');
+      await fs.ensureDir(lockedDir);
+      await fs.writeFile(path.join(lockedDir, 'hidden.state'), 'data');
+      await fs.chmod(lockedDir, 0o000);
+
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      // Act
+      const files = await scanFiles(testDir, 'saves-only');
+
+      // Assert: deve encontrar o arquivo no diretório acessível
+      // (ignora locked pois não tem permissão)
+      expect(files).toEqual(
+        expect.arrayContaining([expect.stringContaining('game.state')])
+      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Erro ao escanear')
+      );
+
+      // Cleanup: restaurar permissões para que afterEach possa remover
+      await fs.chmod(lockedDir, 0o755);
+      consoleErrorSpy.mockRestore();
+    });
+  });
+
+  describe('scanFiles - symlinks', () => {
+    test('deve incluir arquivo save apontado por symlink no modo saves-only', async () => {
+      // Arrange: arquivo .sav real e um symlink que aponta para ele
+      await fs.ensureDir(path.join(testDir, 'saves'));
+      await fs.writeFile(path.join(testDir, 'saves/real.sav'), 'savedata');
+      await fs.symlink(
+        path.join(testDir, 'saves/real.sav'),
+        path.join(testDir, 'saves/linked.sav')
+      );
+
+      // Act
+      const files = await scanFiles(testDir, 'saves-only');
+
+      // Assert: ambos (real e linked) devem ser encontrados
+      expect(files.length).toBeGreaterThanOrEqual(1);
+      expect(files).toEqual(
+        expect.arrayContaining([expect.stringContaining('real.sav')])
+      );
+    });
+
+    test('deve escanear arquivos dentro de diretório apontado por symlink', async () => {
+      // Arrange: diretório real com saves e um symlink para esse diretório
+      await fs.ensureDir(path.join(testDir, 'real_saves'));
+      await fs.writeFile(path.join(testDir, 'real_saves/mario.srm'), 'srm');
+      await fs.symlink(
+        path.join(testDir, 'real_saves'),
+        path.join(testDir, 'linked_saves')
+      );
+
+      // Act
+      const files = await scanFiles(testDir, 'saves-only');
+
+      // Assert: deve encontrar via diretório real (e via symlink se não houver ciclo)
+      expect(files).toEqual(
+        expect.arrayContaining([expect.stringContaining('mario.srm')])
+      );
+    });
+
+    test('não deve entrar em loop infinito com symlink circular', async () => {
+      // Arrange: criar symlink que aponta de volta para o diretório pai (ciclo)
+      await fs.ensureDir(path.join(testDir, 'sub'));
+      await fs.writeFile(path.join(testDir, 'sub/game.state'), 'data');
+      await fs.symlink(testDir, path.join(testDir, 'sub/loop'));
+
+      // Act: deve completar sem travar
+      const files = await scanFiles(testDir, 'saves-only');
+
+      // Assert: deve encontrar o arquivo state sem loop
+      expect(files).toEqual(
+        expect.arrayContaining([expect.stringContaining('game.state')])
+      );
+    });
+
+    test('deve ignorar symlink quebrado e continuar o scan', async () => {
+      // Arrange: symlink apontando para caminho inexistente
+      await fs.ensureDir(path.join(testDir, 'saves'));
+      await fs.writeFile(path.join(testDir, 'saves/valid.sav'), 'data');
+      await fs.symlink('/caminho/inexistente/broken.sav', path.join(testDir, 'saves/broken.sav'));
+
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      // Act
+      const files = await scanFiles(testDir, 'saves-only');
+
+      // Assert: arquivo válido encontrado, symlink quebrado ignorado
+      expect(files).toEqual(
+        expect.arrayContaining([expect.stringContaining('valid.sav')])
+      );
+      expect(files.some((f) => f.includes('broken.sav'))).toBe(false);
+      consoleErrorSpy.mockRestore();
+    });
+
+    test('deve ignorar symlink que aponta para fora do diretório de origem', async () => {
+      // Arrange: symlink dentro de testDir que aponta para /tmp (fora de testDir)
+      await fs.ensureDir(path.join(testDir, 'saves'));
+      await fs.writeFile(path.join(testDir, 'saves/legit.sav'), 'data');
+      await fs.symlink(os.tmpdir(), path.join(testDir, 'saves/escape'));
+
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      // Act
+      const files = await scanFiles(testDir, 'saves-only');
+
+      // Assert: symlink externo ignorado, arquivo legítimo encontrado
+      expect(files).toEqual(
+        expect.arrayContaining([expect.stringContaining('legit.sav')])
+      );
+      expect(files.some((f) => f.includes('escape'))).toBe(false);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Symlink fora do diretório de origem ignorado')
+      );
+      consoleErrorSpy.mockRestore();
+    });
+  });
+
+  describe('scanFiles - validação de modo', () => {
+    test('deve lançar erro para modo inválido', async () => {
+      // Arrange / Act / Assert
+      await expect(scanFiles(testDir, 'unknown-mode')).rejects.toThrow(
+        'Modo de scan inválido: \'unknown-mode\''
+      );
+    });
+
+    test('deve aceitar modo full sem lançar erro', async () => {
+      // Arrange
+      await fs.writeFile(path.join(testDir, 'file.nes'), 'rom');
+
+      // Act / Assert: não deve lançar
+      await expect(scanFiles(testDir, 'full')).resolves.toBeDefined();
+    });
+
+    test('deve aceitar modo saves-only sem lançar erro', async () => {
+      // Arrange
+      await fs.writeFile(path.join(testDir, 'file.sav'), 'save');
+
+      // Act / Assert: não deve lançar
+      await expect(scanFiles(testDir, 'saves-only')).resolves.toBeDefined();
     });
   });
 
