@@ -2,6 +2,11 @@
 
 Guia de navegação da documentação do R3XS Backups.
 
+## 🤖 Para Agentes Autônomos
+
+- **[AGENTS.md](../AGENTS.md)** - Ponto de entrada obrigatório: workflow, regras, board de tasks e índice de docs
+- **Board "Roms warehouse":** https://github.com/users/Vandrs/projects/3 (Number: `3` | Node ID: `PVT_kwHOAE7hg84BUt_W`)
+
 ## 📖 Para Usuários
 - **[README.md](../README.md)** - Como instalar e usar o CLI
 
@@ -31,6 +36,8 @@ Guia de navegação da documentação do R3XS Backups.
 **Novo Desenvolvedor:** PROJECT_STRUCTURE.md → DEVELOPERS_GUIDE.md → CONTRIBUTING.md  
 **Decisões de Design:** ADRs na pasta `adrs/`
 
+**Agente Autônomo:** AGENTS.md → board "Roms warehouse" → docs/ conforme necessidade
+
 ## 🔍 Buscar Informação
 
 **Preciso de...**
@@ -51,4 +58,4 @@ Se você não encontrou o que procurava:
 
 ---
 
-**Última Atualização:** 21/03/2026
+**Última Atualização:** 17/05/2026

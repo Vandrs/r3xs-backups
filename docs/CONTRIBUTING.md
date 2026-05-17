@@ -8,6 +8,15 @@ Obrigado por considerar contribuir com o R3XS Backup!
 
 ## Fluxo de Contribuição
 
+### 0. Verifique o Board de Tasks
+
+Toda atividade deve ter um card no board "Roms warehouse" antes de ser iniciada.
+
+- Acesse o board: **Roms warehouse** — https://github.com/users/Vandrs/projects/3 (Project Number: 3 | Node ID: PVT_kwHOAE7hg84BUt_W)
+- Identifique o card correspondente à tarefa. Se não existir, crie uma issue e adicione ao board.
+- Mova o card para **Doing** antes de começar o trabalho.
+- Ao concluir e abrir o PR, mova o card para o status correspondente.
+
 ### 1. Fork e Clone
 
 ```bash
@@ -23,6 +32,8 @@ git checkout -b feature/minha-feature
 # ou
 git checkout -b fix/meu-bugfix
 ```
+
+> ⚠️ **Nunca commite diretamente na branch `main`.** Todo trabalho deve ocorrer em uma branch dedicada.
 
 ### 3. Desenvolvimento com TDD
 
@@ -173,5 +184,24 @@ git push --tags
 ```
 
 ---
+
+### Trabalhando com Agentes em Paralelo (git worktree)
+
+Quando dois agentes (humanos ou bots) trabalham em tasks independentes simultaneamente, `git worktree` permite criar diretórios de trabalho separados que apontam para o mesmo repositório git — evitando conflitos de working tree.
+
+Exemplos:
+
+```bash
+# Criar worktree para uma task independente
+git worktree add ../r3xs-backup-feature-x feature/feature-x
+
+# Listar worktrees ativos
+git worktree list
+
+# Remover worktree após merge da branch
+git worktree remove ../r3xs-backup-feature-x
+```
+
+Cada worktree compartilha o mesmo repositório git (objetos) mas tem diretório de trabalho separado, permitindo que agentes operem em paralelo sem conflitos.
 
 Dúvidas? Abra uma issue com a label `question`.

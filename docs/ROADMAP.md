@@ -1,5 +1,7 @@
 # Roadmap do Projeto
 
+> **📋 Gestão de tarefas:** O [board "Roms warehouse"](https://github.com/users/Vandrs/projects/3) (Project Number: `3` | Node ID GraphQL: `PVT_kwHOAE7hg84BUt_W`) é a **fonte de verdade** para priorização e status das tasks em andamento. Este documento serve como **guia de alto nível** das fases e features planejadas — consulte o board para saber o que está sendo feito agora e quais são as próximas tasks.
+
 ## Fase 1: CLI MVP ✅ (Atual)
 
 **Status:** Concluído  
@@ -190,7 +192,13 @@ Usamos a matriz de priorização:
 
 ### Referência de tasks
 
-O board do GitHub "Roms warehouse" (https://github.com/users/Vandrs/projects/3) é a fonte de verdade para priorização e status das tasks. Consulte o board para ver a priorização e o status atualizados; este documento não lista colunas ou estados fixos para evitar desalinhamento com o board.
+O board do GitHub **"Roms warehouse"** é a fonte de verdade para priorização e status das tasks:
+
+| Campo | Valor |
+|---|---|
+| URL | https://github.com/users/Vandrs/projects/3 |
+| Project Number | `3` |
+| Node ID (GraphQL) | `PVT_kwHOAE7hg84BUt_W` |
 
 ## Changelog
 

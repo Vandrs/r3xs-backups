@@ -1,81 +1,40 @@
-# AGENTS.md
+# AGENTS.md — Ponto de entrada para agentes autônomos
 
-Guidelines for agentic coding agents operating in this repository.
+Guia enxuto e índice de documentação para agentes (humanos ou bots) que vão operar neste repositório.
 
 ---
 
 ## Project Overview
 
-`r3xs-backup` é um monorepo Node.js que contém ferramentas para backup de ROMs e
-save states para handhelds R36S/R35S com ArkOS. O código está organizado em
-workspaces npm dentro da pasta `packages/`:
+`r3xs-backup` é um monorepo Node.js com ferramentas para backup de ROMs e save states (handhelds R36S/R35S com ArkOS). O código está organizado em npm workspaces na pasta `packages/` e foca em CLI e Desktop (Electron).
 
-- `packages/core` — lógica de negócio reutilizável (scan, copy, validações)
-- `packages/cli` — interface de linha de comando (CLI)
-- `packages/desktop` — aplicação Desktop (Electron)
+- Workspaces:
+  - `packages/core` — lógica de negócio (scan, copy, validações)
+  - `packages/cli` — CLI (Commander.js)
+  - `packages/desktop` — Desktop (Electron)
 
-- **Language:** JavaScript (ES6+, CommonJS)
-- **Runtime:** Node.js ≥ 16.0.0
-- **Package manager:** npm (workspaces)
+- Language: JavaScript (ES6+, CommonJS)
+- Runtime: Node.js ≥ 16.0.0
+- Package manager: npm (workspaces)
 
 ---
 
-## Commands
+## Comandos essenciais
 
-```bash
-# Instalar dependências (root - instala todos os workspaces)
-npm install
+Comandos mínimos para um agente operar no repo. Para a lista completa, veja docs/DEVELOPERS_GUIDE.md.
 
-# Executar o CLI (a partir do root — preferível usar scripts do root para monorepo)
-npm run start:cli
-# ou explicitamente por workspace
-npm start --workspace=@r3xs-backup/cli -- --source /mnt/sdcard --dest ~/backup --full
-
-# Executar a app Desktop em modo desenvolvimento (via root scripts)
-npm run dev:desktop
-
-# Lint em todos os workspaces
-npm run lint
-
-# Run all tests (todos os workspaces)
-npm test
-
-# Run tests in watch mode (during development)
-npm run test:watch
-
-# Run tests with coverage report
-npm run test:coverage
-```
-
-### Running a Single Test
-
-```bash
-# Run a single test file by filename within a workspace
-npm test --workspace=@r3xs-backup/core -- fileScanner.test.js
-
-# Run a single test (or group) by name substring
-npm test --workspace=@r3xs-backup/core -- -t "deve copiar arquivos preservando estrutura"
-
-# Run a test with extra flags
-npm test --workspace=@r3xs-backup/core -- --verbose fileScanner.test.js
-```
-
-Jest configuration lives in package.json of each workspace (no separate global jest.config.js).
-Test files are discovered via the pattern `**/tests/**/*.test.js`.
-
-### Coverage Targets
-
-| Scope    | Minimum |
-|----------|---------|
-| Services | 90%     |
-| Commands | 80%     |
-| Utils    | 95%     |
+| Objetivo | Comando |
+|---|---|
+| Instalar dependências | npm install |
+| Rodar testes | npm test |
+| Lint | npm run lint |
+| Cobertura | npm run test:coverage |
 
 ---
 
 ## Project Structure
 
-Monorepo com os workspaces principais dentro de `packages/`:
+Árvore principal (compacta):
 
 ```
 r3xs-backup/
@@ -89,7 +48,64 @@ r3xs-backup/
 
 ---
 
+## Workflow obrigatório para agentes
+
+Antes de começar a trabalhar, siga estas regras obrigatórias. O board do GitHub é a fonte de verdade para tasks:
+
+- Board: "Roms warehouse" — https://github.com/users/Vandrs/projects/3
+- Project Number: 3
+- Node ID (GraphQL): PVT_kwHOAE7hg84BUt_W
+
+Regras mínimas:
+
+- Antes de qualquer trabalho: verifique o board "Roms warehouse" e identifique (ou crie) o card/issue correspondente. Se a atividade não existir, crie a issue e adicione ao board.
+- Mova o card para **Doing** ao iniciar o trabalho.
+- Nunca commitar diretamente na branch `main`. Sempre crie uma branch com o padrão `feature/<name>` ou `fix/<name>`.
+- Ao concluir o trabalho: abra um Pull Request e mova o card no board para o status apropriado (Review / Done / etc.).
+- Para agentes trabalhando em paralelo em tasks independentes: use `git worktree` para evitar conflitos de diretório de trabalho.
+
+Exemplos de git worktree:
+
+```bash
+# Criar worktree para uma task independente
+git worktree add ../r3xs-backup-feature-x feature/feature-x
+
+# Listar worktrees ativos
+git worktree list
+
+# Remover worktree após merge da branch
+git worktree remove ../r3xs-backup-feature-x
+```
+
+Observações:
+
+- Cada worktree compartilha o mesmo repositório git (objeto db) mas tem diretório de trabalho separado, permitindo que agentes operem em paralelo sem conflitos de working tree.
+- Sempre referencie o card/issue na descrição do PR para rastreabilidade.
+
+---
+
+## Índice de documentação (docs/)
+
+Tabela rápida com os principais artefatos em docs/ e o que cada um contém:
+
+| Arquivo | Conteúdo |
+|---|---|
+| docs/INDEX.md | Índice navegável completo |
+| docs/CONTRIBUTING.md | Fluxo de contribuição, fluxo do board, git worktree, PR checklist |
+| docs/DEVELOPERS_GUIDE.md | Comandos, git workflow, troubleshooting, code style |
+| docs/ROADMAP.md | Visão de alto nível das fases e features planejadas |
+| docs/TESTING.md | Estratégia e guia de testes TDD |
+| docs/PROJECT_STRUCTURE.md | Arquitetura e métricas |
+| docs/MONOREPO_ONBOARDING.md | Onboarding rápido por pacote |
+| docs/adrs/ | ADRs de decisões de arquitetura (ADR-001 a ADR-004) |
+
+---
+
+> Detalhes completos: [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md)
+
 ## Code Style
+
+> Detalhes completos: [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md)
 
 ### General
 
@@ -106,7 +122,7 @@ r3xs-backup/
 - **Classes:** `PascalCase` (no classes in source yet, but follow this when adding)
 - **File names:** `camelCase` (e.g., `fileScanner.js`, `conflictResolver.js`)
 - **Test `describe` blocks:** `PascalCase` matching the module name (e.g., `describe('FileScanner', ...)`)
-- **Test names:** Portuguese, starting with `"deve"` (e.g., `'deve copiar arquivos preservando estrutura de diretórios'`)
+- **Test names:** Portuguese, starting with "deve" (e.g., `'deve copiar arquivos preservando estrutura de diretórios'`)
 - **Boolean variables:** Descriptive names (e.g., `sourceExists`, `shouldCopy`, `isNewer`)
 
 ### Imports
@@ -162,6 +178,8 @@ async function copyFiles(files, sourceBase, destBase, conflictStrategy) {
 
 ---
 
+> Detalhes completos: [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md)
+
 ## Error Handling
 
 Follow the layered error handling strategy:
@@ -198,6 +216,8 @@ Use plain `Error` with descriptive messages — no custom error subclasses.
 
 ---
 
+> Detalhes completos: [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md)
+
 ## Testing Conventions
 
 Follow **TDD**: write tests before implementation.
@@ -226,6 +246,8 @@ Follow **TDD**: write tests before implementation.
 
 ---
 
+> Detalhes completos: [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md)
+
 ## Git Conventions
 
 Use **Conventional Commits**:
@@ -243,6 +265,8 @@ chore: atualiza dependências
 Branch naming: `feature/<name>` or `fix/<name>`.
 
 ---
+
+> Detalhes completos: [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md)
 
 ## PR Checklist
 
