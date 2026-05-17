@@ -21,6 +21,14 @@ async function copyFiles(files, sourceBase, destBase, conflictStrategy = 'newer'
     try {
       // Calcular caminho relativo e destino
       const relativePath = path.relative(sourceBase, sourceFile);
+
+      // Rejeitar caminhos que escapam do destino (defesa em profundidade)
+      if (relativePath.startsWith('..')) {
+        console.error(`Arquivo fora do diretório de origem ignorado: ${sourceFile}`);
+        stats.failed++;
+        continue;
+      }
+
       const destFile = path.join(destBase, relativePath);
 
       // Resolver conflito

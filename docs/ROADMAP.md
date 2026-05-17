@@ -1,5 +1,23 @@
 # Roadmap do Projeto
 
+> **⚠️ Fonte de verdade:** O roadmap vivo e a priorização oficial deste projeto são gerenciados no board do GitHub **"Roms warehouse"**:
+> 👉 https://github.com/users/Vandrs/projects/3
+>
+> Este arquivo é um **registro histórico e de referência**. Para o status atual das tarefas, prioridades e andamento do trabalho, consulte sempre o board. Em caso de divergência entre este documento e o board, **o board prevalece**.
+
+---
+
+## Como propor novos itens ao roadmap
+
+1. **Abra uma issue** no repositório descrevendo a funcionalidade ou melhoria desejada.
+2. **Adicione ao board** linkando a issue ao projeto "Roms warehouse" (ou solicite ao maintainer).
+3. **Discuta viabilidade** nos comentários da issue antes de iniciar qualquer implementação.
+4. Após aprovação, o card será priorizado no board e este documento poderá ser atualizado para refletir a nova fase ou feature.
+
+> Este arquivo é intencionalmente mantido como referência complementar. O board é sempre a fonte de verdade para status e priorização.
+
+---
+
 ## Fase 1: CLI MVP ✅ (Atual)
 
 **Status:** Concluído  
@@ -170,10 +188,12 @@ packages/desktop/
 
 ## Como Contribuir com o Roadmap
 
-1. Abra uma issue com label `enhancement`
-2. Descreva a feature proposta
-3. Discuta viabilidade com maintainers
-4. Após aprovação, adicione ao roadmap
+1. **Consulte o board** antes de propor qualquer coisa: https://github.com/users/Vandrs/projects/3
+2. **Pesquise issues existentes** para evitar duplicatas.
+3. **Abra uma issue** com label `enhancement` descrevendo a feature proposta.
+4. **Adicione a issue ao board** (ou solicite ao maintainer) para que ela entre no fluxo de priorização.
+5. Discuta viabilidade com os maintainers nos comentários da issue.
+6. Após aprovação e priorização no board, inicie a implementação seguindo o fluxo definido em `AGENTS.md`.
 
 ---
 
@@ -190,7 +210,7 @@ Usamos a matriz de priorização:
 
 ### Referência de tasks
 
-O board do GitHub "Roms warehouse" (https://github.com/users/Vandrs/projects/3) é a fonte de verdade para priorização e status das tasks. Consulte o board para ver a priorização e o status atualizados; este documento não lista colunas ou estados fixos para evitar desalinhamento com o board.
+O board do GitHub **"Roms warehouse"** (https://github.com/users/Vandrs/projects/3) é a **fonte única de verdade** para priorização e status das tasks. Consulte sempre o board para ver a priorização e o status atualizados. Este documento não lista colunas ou estados fixos para evitar desalinhamento — o board pode mudar a qualquer momento e é sempre a referência definitiva.
 
 ## Changelog
 

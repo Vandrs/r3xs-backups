@@ -159,5 +159,21 @@ describe('FileCopier', () => {
       expect(result.skipped).toBe(0);
       expect(result.failed).toBe(0);
     });
+
+    test('deve rejeitar arquivo cujo caminho relativo escapa do sourceBase', async () => {
+      // Arrange: arquivo fora de sourceDir (simula output de scanner com symlink externo)
+      const outsideFile = path.join(testDir, 'outside.sav');
+      await fs.writeFile(outsideFile, 'data');
+
+      // Act: sourceBase=sourceDir mas o arquivo está em testDir (um nível acima)
+      const result = await copyFiles([outsideFile], sourceDir, destDir, 'overwrite');
+
+      // Assert: deve falhar sem copiar para fora de destDir
+      expect(result.failed).toBe(1);
+      expect(result.success).toBe(0);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Arquivo fora do diretório de origem ignorado')
+      );
+    });
   });
 });
